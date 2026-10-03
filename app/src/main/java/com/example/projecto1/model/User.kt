@@ -1,4 +1,10 @@
 package com.example.projecto1.model
 
-class User {
-}
+data class User (
+
+    val uid: String="",
+    val name: String="",
+    val email: String = "",
+    val fcmToken: String = ""
+
+)

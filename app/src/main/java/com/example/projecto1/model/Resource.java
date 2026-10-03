@@ -1,8 +1,6 @@
 package com.example.projecto1.model;
 
-public class Resource {
-
-
-
+sealed class Resource<out T>
+{
 
 }
