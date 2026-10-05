@@ -1,4 +1,4 @@
-package com.example.projecto1.repository
+package com.example.proyecto1.repository
 
 class AuthRepository {
 }

@@ -1,6 +1,5 @@
-package com.example.projecto1.util
+package com.example.proyecto1.util
 
-import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -8,14 +7,14 @@ import java.util.*
 object DateUtils {
 
 
-    fun formatTimestamp(timestamp: Timestamp): String {
-        val date = timestamp.toDate()
+    fun formatTimestamp(timestamp: Long): String {
+        val date = Date(timestamp)
         val format = SimpleDateFormat("HH:mm", Locale.getDefault())
         return format.format(date)
     }
 
-    fun formatTimestampFull(timestamp: Timestamp): String {
-        val date = timestamp.toDate()
+    fun formatTimestampFull(timestamp: Long): String {
+        val date = Date(timestamp)
         val format = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
         return format.format(date)
     }

@@ -1,4 +1,4 @@
-package com.example.projecto1.model
+package com.example.proyecto1.model
 
 data class User (
 
