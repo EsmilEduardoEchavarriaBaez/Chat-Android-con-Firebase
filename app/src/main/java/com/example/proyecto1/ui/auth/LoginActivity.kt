@@ -9,6 +9,8 @@ import com.example.proyecto1.databinding.ActivityLoginBinding
 import com.example.proyecto1.model.Resource
 import com.example.proyecto1.ui.users.UsersActivity
 import com.example.proyecto1.viewmodel.AuthViewModel
+import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
 
 class LoginActivity : AppCompatActivity() {
 
@@ -18,6 +20,11 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+        val firebaseAppCheck = FirebaseAppCheck.getInstance()
+        firebaseAppCheck.installAppCheckProviderFactory(
+            DebugAppCheckProviderFactory.getInstance()
+        )
         // Si el usuario no cerró sesión, entra directo sin pasar por el login
         if (viewModel.isUserLoggedIn()) {
             goToUsers()
