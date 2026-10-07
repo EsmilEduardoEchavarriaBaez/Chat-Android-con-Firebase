@@ -3,11 +3,14 @@ package com.example.proyecto1.ui.chat
 import android.annotation.SuppressLint
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.proyecto1.R
 import com.example.proyecto1.databinding.ItemMessageBinding
 import com.example.proyecto1.model.Message
+import com.example.proyecto1.util.Constants
 import com.example.proyecto1.util.DateUtils
 
 class MessageAdapter(
@@ -25,8 +28,20 @@ class MessageAdapter(
     inner class MessageViewHolder(private val binding: ItemMessageBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
             binding.tvSenderName.text = message.senderName
-            binding.tvMessageText.text = message.text
             binding.tvTime.text = DateUtils.formatTimestampFull(message.timestamp)
+
+            // Si es una imagen se carga con Glide desde la URL de Storage, si no se muestra el texto
+            if (message.type == Constants.MESSAGE_TYPE_IMAGE) {
+                binding.ivMessageImage.visibility = View.VISIBLE
+                binding.tvMessageText.visibility = View.GONE
+                Glide.with(binding.root.context)
+                    .load(message.imageUrl)
+                    .into(binding.ivMessageImage)
+            } else {
+                binding.ivMessageImage.visibility = View.GONE
+                binding.tvMessageText.visibility = View.VISIBLE
+                binding.tvMessageText.text = message.text
+            }
 
             // Mis mensajes van a la derecha y con otro color
             if (message.senderId == currentUserId) {

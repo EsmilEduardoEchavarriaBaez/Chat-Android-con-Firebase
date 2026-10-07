@@ -26,6 +26,16 @@
             android:textStyle="bold"
             tools:text="Nombre" />
 
+        <!-- Solo se muestra si el mensaje es una imagen -->
+        <ImageView
+            android:id="@+id/ivMessageImage"
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:layout_marginTop="4dp"
+            android:contentDescription="@string/image_message"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/tvMessageText"
             android:layout_width="wrap_content"

@@ -39,6 +39,21 @@
         android:orientation="horizontal"
         android:padding="8dp">
 
+        <ImageButton
+            android:id="@+id/btnImage"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/send_image"
+            android:src="@drawable/ic_image" />
+
+        <ProgressBar
+            android:id="@+id/pbUpload"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="4dp"
+            android:visibility="gone" />
+
         <EditText
             android:id="@+id/etMessage"
             android:layout_width="0dp"

@@ -3,6 +3,7 @@ package com.example.proyecto1.ui.chat
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +17,14 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChatBinding
     private lateinit var adapter: MessageAdapter
     private val viewModel: ChatViewModel by viewModels()
+
+    // Abre la galería y devuelve la imagen que el usuario eligió (o null si canceló)
+    private val pickImageLauncher =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            if (uri != null) {
+                viewModel.sendImage(uri)
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +45,16 @@ class ChatActivity : AppCompatActivity() {
         binding.btnSend.setOnClickListener {
             viewModel.sendMessage(binding.etMessage.text.toString())
             binding.etMessage.setText("")
+        }
+
+        binding.btnImage.setOnClickListener {
+            pickImageLauncher.launch("image/*")
+        }
+
+        // Mientras se sube la imagen se muestra una ruedita y no se puede enviar otra
+        viewModel.isUploading.observe(this) { isUploading ->
+            binding.pbUpload.visibility = if (isUploading) View.VISIBLE else View.GONE
+            binding.btnImage.isEnabled = !isUploading
         }
 
         viewModel.messages.observe(this) { state ->
