@@ -41,6 +41,11 @@ class ChatActivity : AppCompatActivity() {
         }
         binding.tvChatTitle.text = otherUserName
 
+        // La flecha cierra el chat y vuelve a la lista de usuarios
+        binding.btnBack.setOnClickListener {
+            finish()
+        }
+
         setupRecyclerView()
 
         binding.btnSend.setOnClickListener {
