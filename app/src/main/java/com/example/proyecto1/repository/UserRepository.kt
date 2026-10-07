@@ -88,6 +88,34 @@ class UserRepository {
             }
     }
 
+    //Actualiza la foto de perfil
+    fun updateProfileImage(uid: String, base64Image: String, onResult: (Resource<Unit>) -> Unit) {
+        db.child(Constants.USERS_COLLECTION)
+            .child(uid)
+            .child("ImagenPerfil")
+            .setValue(base64Image)
+            .addOnSuccessListener {
+                onResult(Resource.Success(Unit))
+            }
+            .addOnFailureListener { exception ->
+                onResult(Resource.Error(exception))
+            }
+    }
+    //Obtiene la foto de perfil de usuario
+    fun getProfileImage(uid: String, onResult: (Resource<String>) -> Unit) {
+        db.child(Constants.USERS_COLLECTION)
+            .child(uid)
+            .child("ImagenPerfil")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val imageBase64 = snapshot.getValue(String::class.java) ?: ""
+                onResult(Resource.Success(imageBase64))
+            }
+            .addOnFailureListener { exception ->
+                onResult(Resource.Error(exception))
+            }
+    }
+
     fun logout() {
         auth.signOut()
     }
