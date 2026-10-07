@@ -1,5 +1,6 @@
 package com.example.proyecto1.repository
 
+import android.util.Log
 import com.example.proyecto1.model.Message
 import com.example.proyecto1.model.Resource
 import com.example.proyecto1.util.Constants
@@ -38,6 +39,12 @@ class ChatRepository {
                     .child(receiverId)
                     .child(messageWithId.id)
                     .setValue(messageWithId)
+                    .addOnSuccessListener {
+                        Log.d(Constants.NOTIFICATIONS_LOG_TAG, "Aviso dejado en la bandeja de $receiverId")
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.e(Constants.NOTIFICATIONS_LOG_TAG, "No se pudo dejar el aviso en la bandeja: ${exception.message}")
+                    }
                 onResult(Resource.Success(Unit))
             }
             .addOnFailureListener { exception ->

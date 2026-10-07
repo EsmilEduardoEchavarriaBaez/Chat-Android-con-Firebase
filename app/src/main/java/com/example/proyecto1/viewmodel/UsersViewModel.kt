@@ -57,8 +57,10 @@ class UsersViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // Cierra la sesión del usuario
+    // Deja de escuchar la bandeja y cierra la sesión del usuario
     fun logout() {
+        // Primero se quita el listener; si no, Firebase lo corta con error de permiso al cerrar sesión
+        notificationRepository.stopListening()
         repository.logout()
     }
 

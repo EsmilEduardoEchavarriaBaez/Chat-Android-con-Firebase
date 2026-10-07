@@ -14,4 +14,7 @@ object Constants {
     const val CHAT_IMAGES_FOLDER = "chat_images"
     const val MESSAGE_TYPE_TEXT = "TEXT"
     const val MESSAGE_TYPE_IMAGE = "IMAGE"
+
+    // Etiqueta para buscar en Logcat todo lo relacionado con las notificaciones
+    const val NOTIFICATIONS_LOG_TAG = "Notificaciones"
 }

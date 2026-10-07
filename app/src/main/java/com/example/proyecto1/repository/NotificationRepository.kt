@@ -1,5 +1,6 @@
 package com.example.proyecto1.repository
 
+import android.util.Log
 import com.example.proyecto1.model.Message
 import com.example.proyecto1.util.Constants
 import com.google.firebase.database.ChildEventListener
@@ -19,10 +20,12 @@ class NotificationRepository {
     // Escucha la bandeja del usuario y avisa por cada mensaje nuevo que le llega
     fun listenNewMessages(uid: String, onNewMessage: (Message) -> Unit) {
         val ref = db.child(Constants.NOTIFICATIONS_COLLECTION).child(uid)
+        Log.d(Constants.NOTIFICATIONS_LOG_TAG, "Escuchando la bandeja de $uid")
 
         val listener = object : ChildEventListener {
             // Se ejecuta una vez por cada aviso nuevo en la bandeja
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                Log.d(Constants.NOTIFICATIONS_LOG_TAG, "Llegó un aviso: ${snapshot.key}")
                 val message = snapshot.getValue(Message::class.java)
                 if (message != null) {
                     onNewMessage(message)
@@ -40,8 +43,10 @@ class NotificationRepository {
             // No se usa porque los avisos no cambian de orden
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
 
-            // No se usa porque si falla la lectura simplemente no se notifica
-            override fun onCancelled(error: DatabaseError) {}
+            // Se ejecuta si Firebase no deja leer la bandeja, por ejemplo por las reglas
+            override fun onCancelled(error: DatabaseError) {
+                Log.e(Constants.NOTIFICATIONS_LOG_TAG, "No se pudo leer la bandeja: ${error.message}")
+            }
         }
 
         ref.addChildEventListener(listener)

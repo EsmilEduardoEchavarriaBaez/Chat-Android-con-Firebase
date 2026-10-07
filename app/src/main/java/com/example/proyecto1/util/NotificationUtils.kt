@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -36,6 +37,7 @@ object NotificationUtils {
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
             != PackageManager.PERMISSION_GRANTED
         ) {
+            Log.w(Constants.NOTIFICATIONS_LOG_TAG, "No se muestra \"$title\": falta el permiso de notificaciones")
             return
         }
 
@@ -60,5 +62,6 @@ object NotificationUtils {
 
         // Se usa la hora como id para que una notificación no reemplace a la anterior
         NotificationManagerCompat.from(context).notify(System.currentTimeMillis().toInt(), notification)
+        Log.d(Constants.NOTIFICATIONS_LOG_TAG, "Notificación mostrada: $title")
     }
 }
