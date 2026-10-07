@@ -28,7 +28,6 @@ class RegisterActivity : AppCompatActivity() {
             viewModel.register(name, email, password)
         }
 
-        // El login sigue abierto debajo, así que solo se cierra esta pantalla
         binding.tvGoToLogin.setOnClickListener {
             finish()
         }

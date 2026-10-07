@@ -34,7 +34,7 @@ class AuthRepository {
             .addOnSuccessListener { result ->
                 val firebaseUser = result.user!!
 
-                // Además de crear la cuenta, se guarda el usuario en la base de datos
+                // Se guarda el usuario en la base de datos
                 // para poder mostrarlo después en la lista de usuarios
                 val user = User(uid = firebaseUser.uid, name = name, email = email)
                 db.child(Constants.USERS_COLLECTION)
