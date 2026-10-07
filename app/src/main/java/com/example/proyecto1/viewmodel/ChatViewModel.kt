@@ -69,7 +69,6 @@ class ChatViewModel : ViewModel() {
 
         val message = Message(
             senderId = getCurrentUserId(),
-            senderName = currentUserName,
             text = cleanText,
             type = Constants.MESSAGE_TYPE_TEXT
         )
@@ -85,7 +84,6 @@ class ChatViewModel : ViewModel() {
                 is Resource.Success -> {
                     val message = Message(
                         senderId = getCurrentUserId(),
-                        senderName = currentUserName,
                         imageUrl = result.data,
                         type = Constants.MESSAGE_TYPE_IMAGE
                     )
@@ -99,8 +97,23 @@ class ChatViewModel : ViewModel() {
         }
     }
 
-    // Guarda el mensaje en la base de datos y avisa si hay un error
+    // Agrega el nombre del usuario al mensaje y lo envía
     private fun saveMessage(message: Message) {
+        // Si el nombre todavía no había llegado, se busca antes de enviar
+        if (currentUserName.isEmpty()) {
+            userRepository.getUserById(getCurrentUserId()) { result ->
+                if (result is Resource.Success) {
+                    currentUserName = result.data.name
+                }
+                sendToChat(message.copy(senderName = currentUserName))
+            }
+        } else {
+            sendToChat(message.copy(senderName = currentUserName))
+        }
+    }
+
+    // Guarda el mensaje en la base de datos y avisa si hay un error
+    private fun sendToChat(message: Message) {
         chatRepository.sendMessage(chatId, message) { result ->
             if (result is Resource.Error) {
                 _error.value = "No se pudo enviar el mensaje: ${result.exception.message}"

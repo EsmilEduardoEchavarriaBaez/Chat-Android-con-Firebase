@@ -17,8 +17,9 @@ class UserAdapter(
     inner class UserViewHolder(private val binding: ItemUserBinding) : RecyclerView.ViewHolder(binding.root) {
         // Muestra el nombre y el correo del usuario y detecta el toque
         fun bind(user: User) {
-            binding.tvUserName.text = user.name
-            binding.tvUserEmail.text = user.email
+            // El XML usa Data Binding (@{user.name}), así que se le pasa el usuario al binding
+            binding.user = user
+            binding.executePendingBindings()
             binding.root.setOnClickListener {
                 onUserClick(user)
             }
