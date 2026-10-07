@@ -14,4 +14,6 @@
     <string name="go_to_login">¿Ya tienes cuenta? Inicia sesión</string>
     <string name="message_hint">Escribe un mensaje</string>
     <string name="send_button">Enviar</string>
+    <string name="notification_channel_id" translatable="false">mensajes</string>
+    <string name="notification_channel_name">Mensajes nuevos</string>
 </resources>

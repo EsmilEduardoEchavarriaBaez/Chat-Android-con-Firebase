@@ -23,6 +23,10 @@ class UsersViewModel : ViewModel() {
         }
     }
 
+    fun saveFcmToken() {
+        repository.saveCurrentFcmToken()
+    }
+
     fun logout() {
         repository.logout()
     }

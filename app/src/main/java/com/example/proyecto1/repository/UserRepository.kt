@@ -7,6 +7,7 @@ import com.example.proyecto1.model.User
 import com.example.proyecto1.util.Constants
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.messaging.FirebaseMessaging
 
 
 class UserRepository {
@@ -65,6 +66,15 @@ class UserRepository {
             }
             .addOnFailureListener { exception ->
                 onResult(Resource.Error(exception))
+            }
+    }
+
+    // onNewToken solo se llama cuando el token cambia, así que también
+    // se pide y se guarda cada vez que el usuario entra a la app
+    fun saveCurrentFcmToken() {
+        FirebaseMessaging.getInstance().token
+            .addOnSuccessListener { token ->
+                updateFcmToken(token) { }
             }
     }
 

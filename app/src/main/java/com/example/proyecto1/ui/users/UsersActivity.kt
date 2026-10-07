@@ -2,11 +2,16 @@ package com.example.proyecto1.ui.users
 
 
 import com.example.proyecto1.R
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.proyecto1.databinding.ActivityUsersBinding
 import com.example.proyecto1.model.Resource
@@ -14,11 +19,16 @@ import com.example.proyecto1.model.User
 import com.example.proyecto1.ui.auth.LoginActivity
 import com.example.proyecto1.ui.chat.ChatActivity
 import com.example.proyecto1.util.Constants
+import com.example.proyecto1.util.NotificationUtils
 import com.example.proyecto1.viewmodel.UsersViewModel
 class UsersActivity : AppCompatActivity()  {
 
     private lateinit var binding: ActivityUsersBinding
     private val viewModel: UsersViewModel by viewModels()
+
+    // Pide el permiso de notificaciones (solo hace falta desde Android 13)
+    private val notificationPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
 
 
 
@@ -31,8 +41,21 @@ class UsersActivity : AppCompatActivity()  {
         setupRecyclerView()
         loadUsers()
         setupLogoutButton()
+        setupNotifications()
 
 
+    }
+
+    private fun setupNotifications() {
+        NotificationUtils.createChannel(this)
+        viewModel.saveFcmToken()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
     private fun setupRecyclerView()
     {
