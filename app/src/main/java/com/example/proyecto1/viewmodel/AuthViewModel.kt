@@ -90,4 +90,8 @@ class AuthViewModel : ViewModel() {
         }
         return Resource.Error(Exception(message))
     }
+
+    fun logout() {
+        repository.logout()
+    }
 }

@@ -49,4 +49,15 @@ class AuthRepository {
                 onResult(Resource.Error(exception))
             }
     }
+
+    fun logout ()
+    {
+        auth.signOut()
+
+
+    }
+
+
+
+
 }
