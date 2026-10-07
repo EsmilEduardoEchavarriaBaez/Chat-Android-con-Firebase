@@ -12,4 +12,6 @@
     <string name="register_button">Crear cuenta</string>
     <string name="go_to_register">¿No tienes cuenta? Regístrate</string>
     <string name="go_to_login">¿Ya tienes cuenta? Inicia sesión</string>
+    <string name="message_hint">Escribe un mensaje</string>
+    <string name="send_button">Enviar</string>
 </resources>
