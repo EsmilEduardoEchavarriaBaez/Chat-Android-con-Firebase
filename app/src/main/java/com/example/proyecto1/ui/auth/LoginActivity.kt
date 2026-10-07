@@ -17,6 +17,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private val viewModel: AuthViewModel by viewModels()
 
+    // Prepara la pantalla de login y revisa si ya hay una sesión iniciada
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -60,6 +61,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    // Muestra u oculta la carga y bloquea el botón mientras espera
     private fun showLoading(isLoading: Boolean) {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         binding.btnLogin.isEnabled = !isLoading
@@ -68,6 +70,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    // Abre la lista de usuarios y cierra el login
     private fun goToUsers() {
         startActivity(Intent(this, UsersActivity::class.java))
         finish()

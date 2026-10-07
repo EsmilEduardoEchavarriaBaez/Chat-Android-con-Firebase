@@ -15,6 +15,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
     private val viewModel: AuthViewModel by viewModels()
 
+    // Prepara la pantalla de registro y sus botones
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
@@ -48,6 +49,7 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    // Muestra u oculta la carga y bloquea el botón mientras espera
     private fun showLoading(isLoading: Boolean) {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         binding.btnRegister.isEnabled = !isLoading
@@ -56,6 +58,7 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    // Abre la lista de usuarios y borra las pantallas anteriores
     private fun goToUsers() {
         // Se limpia la pila para que al dar "atrás" no vuelva al registro ni al login
         val intent = Intent(this, UsersActivity::class.java)

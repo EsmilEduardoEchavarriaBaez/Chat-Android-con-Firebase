@@ -30,10 +30,12 @@ class ChatViewModel : ViewModel() {
     private var chatId = ""
     private var currentUserName = ""
 
+    // Devuelve el uid del usuario actual
     fun getCurrentUserId(): String {
         return userRepository.getCurrentUser() ?: ""
     }
 
+    // Inicia el chat, busca el nombre del usuario y empieza a escuchar los mensajes
     fun startChat(otherUserId: String) {
         // Si se gira la pantalla el ViewModel se mantiene, así que no se vuelve a iniciar
         if (chatId.isNotEmpty()) {
@@ -56,6 +58,7 @@ class ChatViewModel : ViewModel() {
         }
     }
 
+    // Envía un mensaje de texto si no está vacío
     fun sendMessage(text: String) {
         val cleanText = text.trim()
 
@@ -73,7 +76,7 @@ class ChatViewModel : ViewModel() {
         saveMessage(message)
     }
 
-    // Primero se sube la imagen a Storage y después se guarda el mensaje con su URL
+    // Sube la imagen y después envía el mensaje con su URL
     fun sendImage(imageUri: Uri) {
         _isUploading.value = true
         storageRepository.uploadImage(chatId, imageUri) { result ->
@@ -96,6 +99,7 @@ class ChatViewModel : ViewModel() {
         }
     }
 
+    // Guarda el mensaje en la base de datos y avisa si hay un error
     private fun saveMessage(message: Message) {
         chatRepository.sendMessage(chatId, message) { result ->
             if (result is Resource.Error) {
@@ -104,6 +108,7 @@ class ChatViewModel : ViewModel() {
         }
     }
 
+    // Se ejecuta al cerrar el chat y deja de escuchar los mensajes
     override fun onCleared() {
         super.onCleared()
         chatRepository.stopListening()

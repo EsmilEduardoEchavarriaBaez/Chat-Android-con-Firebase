@@ -32,6 +32,7 @@ class UsersActivity : AppCompatActivity()  {
 
 
 
+    // Prepara la pantalla de usuarios
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -46,6 +47,7 @@ class UsersActivity : AppCompatActivity()  {
 
     }
 
+    // Crea el canal, guarda el token y pide el permiso de notificaciones
     private fun setupNotifications() {
         NotificationUtils.createChannel(this)
         viewModel.saveFcmToken()
@@ -57,6 +59,7 @@ class UsersActivity : AppCompatActivity()  {
             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
+    // Configura la lista de usuarios
     private fun setupRecyclerView()
     {
         binding.rvUsers.layoutManager = LinearLayoutManager(this)
@@ -66,6 +69,7 @@ class UsersActivity : AppCompatActivity()  {
 
     }
 
+    // Carga los usuarios y los muestra en la lista
     private fun loadUsers() {
         viewModel.loadUsers()
         viewModel.usersList.observe(this) { state ->
@@ -87,6 +91,7 @@ class UsersActivity : AppCompatActivity()  {
         }
     }
 
+    // Abre el chat con el usuario elegido pasándole su uid y su nombre
     private fun openChat(user: User) {
         val intent = Intent(this, ChatActivity::class.java)
         intent.putExtra(Constants.EXTRA_USER_ID, user.uid)
@@ -94,6 +99,7 @@ class UsersActivity : AppCompatActivity()  {
         startActivity(intent)
     }
 
+    // Cierra la sesión y vuelve al login
     private fun setupLogoutButton() {
         binding.btnLogout.setOnClickListener {
             viewModel.logout()
@@ -102,6 +108,7 @@ class UsersActivity : AppCompatActivity()  {
         }
     }
 
+    // Muestra u oculta la barra de carga
     private fun showLoading(isLoading: Boolean) {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }

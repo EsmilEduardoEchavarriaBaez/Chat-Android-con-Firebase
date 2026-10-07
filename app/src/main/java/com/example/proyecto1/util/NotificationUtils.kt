@@ -16,7 +16,7 @@ import com.example.proyecto1.ui.auth.LoginActivity
 
 object NotificationUtils {
 
-    // Desde Android 8 las notificaciones necesitan un canal
+    // Crea el canal de notificaciones de los mensajes
     fun createChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -29,6 +29,7 @@ object NotificationUtils {
         }
     }
 
+    // Muestra una notificación con título y texto
     fun showNotification(context: Context, title: String, body: String) {
         // Desde Android 13 hay que tener el permiso, si no se da no se muestra nada
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&

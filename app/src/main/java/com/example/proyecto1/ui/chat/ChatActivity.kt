@@ -26,6 +26,7 @@ class ChatActivity : AppCompatActivity() {
             }
         }
 
+    // Prepara la pantalla del chat, sus botones y observa los mensajes
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityChatBinding.inflate(layoutInflater)
@@ -82,6 +83,7 @@ class ChatActivity : AppCompatActivity() {
         viewModel.startChat(otherUserId)
     }
 
+    // Configura la lista de mensajes para que empiece desde abajo
     private fun setupRecyclerView() {
         adapter = MessageAdapter(viewModel.getCurrentUserId())
         val layoutManager = LinearLayoutManager(this)

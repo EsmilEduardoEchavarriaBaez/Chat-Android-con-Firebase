@@ -15,6 +15,7 @@ import org.junit.Assert.*
  */
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
+    // Revisa que el paquete de la app sea el correcto
     @Test
     fun useAppContext() {
         // Context of the app under test.

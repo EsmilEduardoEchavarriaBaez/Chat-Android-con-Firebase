@@ -21,10 +21,12 @@ class AuthViewModel : ViewModel() {
     private val _authState = MutableLiveData<Resource<FirebaseUser>>()
     val authState: LiveData<Resource<FirebaseUser>> = _authState
 
+    // Indica si ya hay una sesión iniciada
     fun isUserLoggedIn(): Boolean {
         return repository.getCurrentUser() != null
     }
 
+    // Valida los datos y pide al repositorio iniciar sesión
     fun login(email: String, password: String) {
         val error = validateEmailAndPassword(email, password)
         if (error != null) {
@@ -38,6 +40,7 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    // Valida los datos y pide al repositorio crear la cuenta
     fun register(name: String, email: String, password: String) {
         val error = validateRegister(name, email, password)
         if (error != null) {
@@ -51,6 +54,7 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    // Revisa que el correo y la contraseña no estén vacíos y que el correo sea válido
     private fun validateEmailAndPassword(email: String, password: String): String? {
         if (Validators.isEmptyField(email) || Validators.isEmptyField(password)) {
             return "Completa todos los campos"
@@ -61,6 +65,7 @@ class AuthViewModel : ViewModel() {
         return null
     }
 
+    // Valida todos los campos del registro
     private fun validateRegister(name: String, email: String, password: String): String? {
         if (Validators.isEmptyField(name)) {
             return "Completa todos los campos"
@@ -75,7 +80,7 @@ class AuthViewModel : ViewModel() {
         return null
     }
 
-    // Cambia el error de Firebase por un mensaje que el usuario pueda entender
+    // Cambia el error de Firebase por un mensaje en español
     private fun toFriendlyResult(result: Resource<FirebaseUser>): Resource<FirebaseUser> {
         if (result !is Resource.Error) {
             return result
@@ -91,6 +96,7 @@ class AuthViewModel : ViewModel() {
         return Resource.Error(Exception(message))
     }
 
+    // Cierra la sesión del usuario
     fun logout() {
         repository.logout()
     }

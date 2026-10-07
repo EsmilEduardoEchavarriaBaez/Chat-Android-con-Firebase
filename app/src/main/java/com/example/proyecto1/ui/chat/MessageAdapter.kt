@@ -19,6 +19,7 @@ class MessageAdapter(
 
     private var messages: List<Message> = emptyList()
 
+    // Reemplaza la lista de mensajes y refresca la pantalla
     @SuppressLint("NotifyDataSetChanged")
     fun setMessages(newMessages: List<Message>) {
         messages = newMessages
@@ -26,6 +27,7 @@ class MessageAdapter(
     }
 
     inner class MessageViewHolder(private val binding: ItemMessageBinding) : RecyclerView.ViewHolder(binding.root) {
+        // Llena una burbuja con el nombre, el texto o la imagen y la hora
         fun bind(message: Message) {
             binding.tvSenderName.text = message.senderName
             binding.tvTime.text = DateUtils.formatTimestampFull(message.timestamp)
@@ -54,14 +56,17 @@ class MessageAdapter(
         }
     }
 
+    // Crea la vista de cada mensaje a partir del XML
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
         val binding = ItemMessageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return MessageViewHolder(binding)
     }
 
+    // Pasa el mensaje de esa posición a su vista
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
         holder.bind(messages[position])
     }
 
+    // Devuelve cuántos mensajes hay en la lista
     override fun getItemCount(): Int = messages.size
 }

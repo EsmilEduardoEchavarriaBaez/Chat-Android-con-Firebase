@@ -15,12 +15,12 @@ class UserRepository {
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseDatabase.getInstance().reference
 
-    // Obtener el usuario actual
+    // Devuelve el uid del usuario con sesión iniciada
     fun getCurrentUser(): String? {
         return auth.currentUser?.uid
     }
 
-    // Obtener todos los usuarios EXCEPTO el actual
+    // Obtiene todos los usuarios menos el que inició sesión
     fun getAllUsersExceptCurrent(onResult: (Resource<List<User>>) -> Unit)
     {
         val currentUid = auth.currentUser?.uid ?: run {
@@ -50,6 +50,7 @@ class UserRepository {
 
     }
 
+    // Guarda el token de notificaciones en el usuario actual
     fun updateFcmToken(fcmToken: String, onResult: (Resource<Unit>) -> Unit)
     {
         val uid = auth.currentUser?.uid ?: run{
@@ -69,8 +70,7 @@ class UserRepository {
             }
     }
 
-    // onNewToken solo se llama cuando el token cambia, así que también
-    // se pide y se guarda cada vez que el usuario entra a la app
+    // Pide el token de notificaciones del teléfono y lo guarda
     fun saveCurrentFcmToken() {
         FirebaseMessaging.getInstance().token
             .addOnSuccessListener { token ->
@@ -78,7 +78,7 @@ class UserRepository {
             }
     }
 
-    // Obtener un usuario por UID
+    // Busca un usuario por su uid
     fun getUserById(uid: String, onResult: (Resource<User>) -> Unit)
     {
         db.child(Constants.USERS_COLLECTION)
@@ -98,6 +98,7 @@ class UserRepository {
             }
     }
 
+    // Cierra la sesión del usuario
     fun logout() {
         auth.signOut()
     }

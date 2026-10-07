@@ -16,6 +16,7 @@ class UsersViewModel : ViewModel() {
     private val _usersList = MutableLiveData<Resource<List<User>>>()
     val usersList: LiveData<Resource<List<User>>> = _usersList
 
+    // Pide la lista de usuarios al repositorio
     fun loadUsers() {
         _usersList.value = Resource.Loading
         repository.getAllUsersExceptCurrent { result ->
@@ -23,10 +24,12 @@ class UsersViewModel : ViewModel() {
         }
     }
 
+    // Guarda el token de notificaciones del usuario
     fun saveFcmToken() {
         repository.saveCurrentFcmToken()
     }
 
+    // Cierra la sesión del usuario
     fun logout() {
         repository.logout()
     }

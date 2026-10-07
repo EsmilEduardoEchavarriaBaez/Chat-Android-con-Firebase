@@ -12,11 +12,12 @@ class AuthRepository {
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseDatabase.getInstance().reference
 
-    // Firebase guarda la sesión, así que si el usuario no cerró sesión esto no es null
+    // Devuelve el usuario con sesión iniciada o null si no hay sesión
     fun getCurrentUser(): FirebaseUser? {
         return auth.currentUser
     }
 
+    // Inicia sesión en Firebase con correo y contraseña
     fun login(email: String, password: String, onResult: (Resource<FirebaseUser>) -> Unit) {
         auth.signInWithEmailAndPassword(email, password)
             .addOnSuccessListener { result ->
@@ -27,12 +28,13 @@ class AuthRepository {
             }
     }
 
+    // Crea la cuenta y guarda los datos del usuario en la base de datos
     fun register(name: String, email: String, password: String, onResult: (Resource<FirebaseUser>) -> Unit) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnSuccessListener { result ->
                 val firebaseUser = result.user!!
 
-                // Además de crear la cuenta, se guarda el usuario en Firestore
+                // Además de crear la cuenta, se guarda el usuario en la base de datos
                 // para poder mostrarlo después en la lista de usuarios
                 val user = User(uid = firebaseUser.uid, name = name, email = email)
                 db.child(Constants.USERS_COLLECTION)
@@ -50,6 +52,7 @@ class AuthRepository {
             }
     }
 
+    // Cierra la sesión del usuario
     fun logout ()
     {
         auth.signOut()

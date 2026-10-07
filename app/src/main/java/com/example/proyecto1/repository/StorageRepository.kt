@@ -9,7 +9,7 @@ class StorageRepository {
 
     private val storage = FirebaseStorage.getInstance().reference
 
-    // Sube la imagen a Firebase Storage y devuelve la URL para poder mostrarla
+    // Sube la imagen a Firebase Storage y devuelve su URL de descarga
     fun uploadImage(chatId: String, imageUri: Uri, onResult: (Resource<String>) -> Unit) {
         // Cada imagen se guarda en chat_images/{chatId}/ con la hora como nombre
         val imageRef = storage.child(Constants.CHAT_IMAGES_FOLDER)

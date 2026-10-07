@@ -9,8 +9,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     private val userRepository = UserRepository()
 
-    // Se llama cuando llega una notificación con la app abierta.
-    // Con la app cerrada o en segundo plano, Android la muestra solo.
+    // Se ejecuta al llegar una notificación y la muestra en pantalla
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
@@ -25,6 +24,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         NotificationUtils.showNotification(this, title, body)
     }
 
+    // Se ejecuta cuando cambia el token y lo guarda en la base de datos
     override fun onNewToken(token: String) {
         super.onNewToken(token)
 

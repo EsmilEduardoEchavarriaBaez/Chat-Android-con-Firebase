@@ -17,11 +17,12 @@ class ChatRepository {
     private var messagesQuery: Query? = null
     private var messagesListener: ValueEventListener? = null
 
-    // El chat entre dos usuarios siempre tiene el mismo id, sin importar quién lo abra
+    // Genera el id del chat uniendo los dos uid en orden
     fun getChatId(uid1: String, uid2: String): String {
         return if (uid1 < uid2) "${uid1}_$uid2" else "${uid2}_$uid1"
     }
 
+    // Guarda un mensaje nuevo dentro del chat en la base de datos
     fun sendMessage(chatId: String, message: Message, onResult: (Resource<Unit>) -> Unit) {
         // push() crea un id único para el mensaje
         val messageRef = db.child(Constants.CHATS_COLLECTION)
@@ -39,7 +40,7 @@ class ChatRepository {
             }
     }
 
-    // Escucha los mensajes en tiempo real: se llama cada vez que alguien envía uno
+    // Escucha en tiempo real los mensajes del chat ordenados por hora
     fun listenMessages(chatId: String, onResult: (Resource<List<Message>>) -> Unit) {
         val query = db.child(Constants.CHATS_COLLECTION)
             .child(chatId)
@@ -47,6 +48,7 @@ class ChatRepository {
             .orderByChild("timestamp")
 
         val listener = object : ValueEventListener {
+            // Se ejecuta cada vez que cambian los mensajes y arma la lista
             override fun onDataChange(snapshot: DataSnapshot) {
                 val messages = mutableListOf<Message>()
                 for (child in snapshot.children) {
@@ -58,6 +60,7 @@ class ChatRepository {
                 onResult(Resource.Success(messages))
             }
 
+            // Se ejecuta si la lectura falla y devuelve el error
             override fun onCancelled(error: DatabaseError) {
                 onResult(Resource.Error(error.toException()))
             }
@@ -68,6 +71,7 @@ class ChatRepository {
         messagesListener = listener
     }
 
+    // Deja de escuchar los mensajes al cerrar el chat
     fun stopListening() {
         val listener = messagesListener ?: return
         messagesQuery?.removeEventListener(listener)
