@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.proyecto1.databinding.ActivityChatBinding
 import com.example.proyecto1.model.Resource
+import com.example.proyecto1.util.ActiveChat
 import com.example.proyecto1.util.Constants
 import com.example.proyecto1.viewmodel.ChatViewModel
 
@@ -17,6 +18,7 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChatBinding
     private lateinit var adapter: MessageAdapter
     private val viewModel: ChatViewModel by viewModels()
+    private var otherUserId = ""
 
     // Abre la galería y devuelve la imagen que el usuario eligió (o null si canceló)
     private val pickImageLauncher =
@@ -33,7 +35,7 @@ class ChatActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Datos del otro usuario que llegan desde la lista de usuarios
-        val otherUserId = intent.getStringExtra(Constants.EXTRA_USER_ID) ?: ""
+        otherUserId = intent.getStringExtra(Constants.EXTRA_USER_ID) ?: ""
         val otherUserName = intent.getStringExtra(Constants.EXTRA_USER_NAME) ?: ""
         if (otherUserId.isEmpty()) {
             finish()
@@ -86,6 +88,18 @@ class ChatActivity : AppCompatActivity() {
         }
 
         viewModel.startChat(otherUserId)
+    }
+
+    // Marca este chat como abierto para no recibir notificaciones de él
+    override fun onResume() {
+        super.onResume()
+        ActiveChat.userId = otherUserId
+    }
+
+    // Marca que ya no se está viendo este chat
+    override fun onPause() {
+        super.onPause()
+        ActiveChat.userId = null
     }
 
     // Configura la lista de mensajes para que empiece desde abajo

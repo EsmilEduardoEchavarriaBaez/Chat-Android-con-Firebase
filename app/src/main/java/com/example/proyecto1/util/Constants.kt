@@ -5,6 +5,7 @@ object Constants {
     const val USERS_COLLECTION = "users"
     const val CHATS_COLLECTION = "chats"
     const val MESSAGES_COLLECTION = "messages"
+    const val NOTIFICATIONS_COLLECTION = "notifications"
 
     const val EXTRA_USER_ID = "userId"
     const val EXTRA_USER_NAME = "userName"

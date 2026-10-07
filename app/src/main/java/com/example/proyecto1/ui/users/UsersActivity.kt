@@ -47,10 +47,11 @@ class UsersActivity : AppCompatActivity()  {
 
     }
 
-    // Crea el canal, guarda el token y pide el permiso de notificaciones
+    // Crea el canal, guarda el token, escucha los mensajes nuevos y pide el permiso de notificaciones
     private fun setupNotifications() {
         NotificationUtils.createChannel(this)
         viewModel.saveFcmToken()
+        viewModel.startNotifications()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)

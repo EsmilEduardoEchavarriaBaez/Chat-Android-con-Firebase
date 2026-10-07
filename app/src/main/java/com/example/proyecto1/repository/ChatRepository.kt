@@ -22,8 +22,8 @@ class ChatRepository {
         return if (uid1 < uid2) "${uid1}_$uid2" else "${uid2}_$uid1"
     }
 
-    // Guarda un mensaje nuevo dentro del chat en la base de datos
-    fun sendMessage(chatId: String, message: Message, onResult: (Resource<Unit>) -> Unit) {
+    // Guarda un mensaje nuevo en el chat y deja una copia en la bandeja del otro usuario
+    fun sendMessage(chatId: String, receiverId: String, message: Message, onResult: (Resource<Unit>) -> Unit) {
         // push() crea un id único para el mensaje
         val messageRef = db.child(Constants.CHATS_COLLECTION)
             .child(chatId)
@@ -33,6 +33,11 @@ class ChatRepository {
         val messageWithId = message.copy(id = messageRef.key ?: "")
         messageRef.setValue(messageWithId)
             .addOnSuccessListener {
+                // La copia en notifications/{receiverId} es la que le avisa al otro usuario
+                db.child(Constants.NOTIFICATIONS_COLLECTION)
+                    .child(receiverId)
+                    .child(messageWithId.id)
+                    .setValue(messageWithId)
                 onResult(Resource.Success(Unit))
             }
             .addOnFailureListener { exception ->

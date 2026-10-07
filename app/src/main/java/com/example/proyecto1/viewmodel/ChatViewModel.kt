@@ -28,6 +28,7 @@ class ChatViewModel : ViewModel() {
     val error: LiveData<String> = _error
 
     private var chatId = ""
+    private var otherUserId = ""
     private var currentUserName = ""
 
     // Devuelve el uid del usuario actual
@@ -42,6 +43,7 @@ class ChatViewModel : ViewModel() {
             return
         }
 
+        this.otherUserId = otherUserId
         val currentUserId = getCurrentUserId()
         chatId = chatRepository.getChatId(currentUserId, otherUserId)
 
@@ -114,7 +116,7 @@ class ChatViewModel : ViewModel() {
 
     // Guarda el mensaje en la base de datos y avisa si hay un error
     private fun sendToChat(message: Message) {
-        chatRepository.sendMessage(chatId, message) { result ->
+        chatRepository.sendMessage(chatId, otherUserId, message) { result ->
             if (result is Resource.Error) {
                 _error.value = "No se pudo enviar el mensaje: ${result.exception.message}"
             }
