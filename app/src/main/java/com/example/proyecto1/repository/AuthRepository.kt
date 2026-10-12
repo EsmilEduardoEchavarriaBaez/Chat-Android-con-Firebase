@@ -51,16 +51,4 @@ class AuthRepository {
                 onResult(Resource.Error(exception))
             }
     }
-
-    // Cierra la sesión del usuario
-    fun logout ()
-    {
-        auth.signOut()
-
-
-    }
-
-
-
-
 }

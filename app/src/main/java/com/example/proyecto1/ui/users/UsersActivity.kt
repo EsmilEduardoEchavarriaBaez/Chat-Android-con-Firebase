@@ -1,7 +1,6 @@
 package com.example.proyecto1.ui.users
 
 
-import com.example.proyecto1.R
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager

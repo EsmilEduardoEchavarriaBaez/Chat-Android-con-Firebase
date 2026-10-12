@@ -95,9 +95,4 @@ class AuthViewModel : ViewModel() {
         }
         return Resource.Error(Exception(message))
     }
-
-    // Cierra la sesión del usuario
-    fun logout() {
-        repository.logout()
-    }
 }

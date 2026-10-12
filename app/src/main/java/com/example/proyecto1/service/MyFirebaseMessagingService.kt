@@ -29,8 +29,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         super.onNewToken(token)
 
         // Guardar el token en la base de datos
-        userRepository.updateFcmToken(token) { result ->
-            // El token se guardó
-        }
+        userRepository.updateFcmToken(token) { }
     }
 }
