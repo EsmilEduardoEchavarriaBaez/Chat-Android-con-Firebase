@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.proyecto1.R
 import com.example.proyecto1.databinding.ItemMessageBinding
 import com.example.proyecto1.model.Message
@@ -20,9 +22,18 @@ class MessageAdapter(
 ) : ListAdapter<Message, MessageAdapter.MessageViewHolder>(MessageDiffCallback()) {
 
     inner class MessageViewHolder(private val binding: ItemMessageBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        // Radio de las esquinas de las imágenes (12dp pasado a píxeles)
+        private val imageCornerRadius = (12 * binding.root.resources.displayMetrics.density).toInt()
+
         // Llena una burbuja con el nombre, el texto o la imagen y la hora
         fun bind(message: Message) {
+            val isMine = message.senderId == currentUserId
+
+            // Mi nombre no hace falta en mis propios mensajes
             binding.tvSenderName.text = message.senderName
+            binding.tvSenderName.visibility =
+                if (isMine || message.senderName.isEmpty()) View.GONE else View.VISIBLE
             binding.tvTime.text = DateUtils.formatTimestampFull(message.timestamp)
 
             // Si es una imagen se carga con Glide desde la URL de Storage, si no se muestra el texto
@@ -31,6 +42,8 @@ class MessageAdapter(
                 binding.tvMessageText.visibility = View.GONE
                 Glide.with(binding.root.context)
                     .load(message.imageUrl)
+                    .placeholder(R.drawable.bg_image_placeholder)
+                    .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
                     .into(binding.ivMessageImage)
             } else {
                 // La vista se recicla, así que se suelta la imagen que tenía antes para liberar memoria
@@ -41,7 +54,7 @@ class MessageAdapter(
             }
 
             // Mis mensajes van a la derecha y con otro color
-            if (message.senderId == currentUserId) {
+            if (isMine) {
                 binding.messageContainer.gravity = Gravity.END
                 binding.bubble.setBackgroundResource(R.drawable.bg_message_sent)
             } else {

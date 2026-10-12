@@ -5,4 +5,15 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="black">#FF000000</color>
+
+    <!-- Colores crema y café de la pantalla del chat -->
+    <color name="cream_background">#FFFFF8EE</color>
+    <color name="cream_dark">#FFF1E3CC</color>
+    <color name="cream_border">#FFE6D5BC</color>
+    <color name="bubble_sent">#FFF4D9B0</color>
+    <color name="bubble_received">#FFFFFDF8</color>
+    <color name="coffee">#FF6F4A2F</color>
+    <color name="coffee_dark">#FF4E3320</color>
+    <color name="text_primary">#FF3E2C1E</color>
+    <color name="text_secondary">#FF6E5A46</color>
 </resources>

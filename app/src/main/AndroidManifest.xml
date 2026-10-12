@@ -37,6 +37,7 @@
         <activity
                 android:name=".ui.chat.ChatActivity"
                 android:exported="false"
+                android:theme="@style/Theme.Projecto1.Chat"
                 android:windowSoftInputMode="adjustResize" />
 
         <service

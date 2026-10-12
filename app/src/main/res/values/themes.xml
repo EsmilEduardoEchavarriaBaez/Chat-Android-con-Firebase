@@ -13,4 +13,14 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
     </style>
+
+    <!-- Tema del chat: hereda el de la app pero con colores crema y café -->
+    <style name="Theme.Projecto1.Chat">
+        <item name="colorPrimary">@color/coffee</item>
+        <item name="colorPrimaryVariant">@color/coffee_dark</item>
+        <item name="colorOnPrimary">@color/cream_background</item>
+        <item name="android:statusBarColor">@color/coffee_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowBackground">@color/cream_background</item>
+    </style>
 </resources>

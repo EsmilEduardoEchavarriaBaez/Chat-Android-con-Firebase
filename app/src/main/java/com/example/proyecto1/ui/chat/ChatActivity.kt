@@ -44,6 +44,8 @@ class ChatActivity : AppCompatActivity() {
             return
         }
         binding.tvChatTitle.text = otherUserName
+        // En el círculo de arriba se pone la primera letra del nombre
+        binding.tvAvatar.text = otherUserName.take(1).uppercase().ifEmpty { "?" }
 
         // La flecha cierra el chat y vuelve a la lista de usuarios
         binding.btnBack.setOnClickListener {

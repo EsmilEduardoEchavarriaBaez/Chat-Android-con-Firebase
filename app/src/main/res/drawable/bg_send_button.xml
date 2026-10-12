@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Botón redondo de enviar; el ripple hace el efecto de onda al tocarlo -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/cream_dark">
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@color/coffee" />
+        </shape>
+    </item>
+</ripple>
