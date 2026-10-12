@@ -17,6 +17,7 @@
     <string name="send_image">Enviar imagen</string>
     <string name="image_message">Imagen enviada en el chat</string>
     <string name="back_button">Volver</string>
+    <string name="chat_empty">Todavía no hay mensajes con %1$s.\n¡Envía el primero! 👋</string>
     <string name="notification_channel_id" translatable="false">mensajes</string>
     <string name="notification_channel_name">Mensajes nuevos</string>
 </resources>

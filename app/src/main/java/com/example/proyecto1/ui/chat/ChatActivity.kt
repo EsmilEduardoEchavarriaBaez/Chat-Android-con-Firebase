@@ -6,8 +6,10 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.proyecto1.R
 import com.example.proyecto1.databinding.ActivityChatBinding
 import com.example.proyecto1.model.Message
 import com.example.proyecto1.model.Resource
@@ -46,6 +48,7 @@ class ChatActivity : AppCompatActivity() {
         binding.tvChatTitle.text = otherUserName
         // En el círculo de arriba se pone la primera letra del nombre
         binding.tvAvatar.text = otherUserName.take(1).uppercase().ifEmpty { "?" }
+        binding.tvEmpty.text = getString(R.string.chat_empty, otherUserName.ifEmpty { "este usuario" })
 
         // La flecha cierra el chat y vuelve a la lista de usuarios
         binding.btnBack.setOnClickListener {
@@ -54,7 +57,14 @@ class ChatActivity : AppCompatActivity() {
 
         setupRecyclerView()
 
+        // El botón de enviar se activa o se apaga según si hay texto escrito
+        updateSendButton()
+        binding.etMessage.doAfterTextChanged {
+            updateSendButton()
+        }
+
         binding.btnSend.setOnClickListener {
+            animateSendButton()
             viewModel.sendMessage(binding.etMessage.text.toString())
             binding.etMessage.setText("")
         }
@@ -71,7 +81,10 @@ class ChatActivity : AppCompatActivity() {
 
         viewModel.messages.observe(this) { state ->
             when (state) {
-                is Resource.Loading -> binding.progressBar.visibility = View.VISIBLE
+                is Resource.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                    binding.tvEmpty.visibility = View.GONE
+                }
                 is Resource.Success -> {
                     binding.progressBar.visibility = View.GONE
                     showMessages(state.data)
@@ -126,6 +139,9 @@ class ChatActivity : AppCompatActivity() {
 
     // Muestra los mensajes y baja hasta el final solo si llegó uno nuevo
     private fun showMessages(messages: List<Message>) {
+        // Si todavía no hay mensajes se muestra un aviso en el centro
+        binding.tvEmpty.visibility = if (messages.isEmpty()) View.VISIBLE else View.GONE
+
         val lastIdBefore = adapter.currentList.lastOrNull()?.id
         // submitList calcula las diferencias y solo redibuja los mensajes que cambiaron
         adapter.submitList(messages) {
@@ -135,5 +151,24 @@ class ChatActivity : AppCompatActivity() {
                 binding.rvMessages.scrollToPosition(messages.size - 1)
             }
         }
+    }
+
+    // Activa el botón de enviar solo cuando hay texto y lo deja medio transparente si no
+    private fun updateSendButton() {
+        val hasText = binding.etMessage.text.toString().trim().isNotEmpty()
+        binding.btnSend.isEnabled = hasText
+        binding.btnSend.alpha = if (hasText) 1f else 0.4f
+    }
+
+    // Hace un pequeño efecto de rebote en el botón al enviar
+    private fun animateSendButton() {
+        binding.btnSend.animate()
+            .scaleX(0.8f)
+            .scaleY(0.8f)
+            .setDuration(90)
+            .withEndAction {
+                binding.btnSend.animate().scaleX(1f).scaleY(1f).setDuration(90).start()
+            }
+            .start()
     }
 }

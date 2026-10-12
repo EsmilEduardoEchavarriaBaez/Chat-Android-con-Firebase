@@ -10,6 +10,22 @@
     android:paddingVertical="3dp"
     tools:ignore="UselessParent">
 
+    <!-- Fecha del día, solo aparece en el primer mensaje de cada día -->
+    <TextView
+        android:id="@+id/tvDateHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginVertical="8dp"
+        android:background="@drawable/bg_date_header"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="4dp"
+        android:textColor="@color/coffee_dark"
+        android:textSize="12sp"
+        android:visibility="gone"
+        tools:text="Hoy"
+        tools:visibility="visible" />
+
     <!-- La burbuja se pone a la derecha si el mensaje es mío y a la izquierda si no -->
     <LinearLayout
         android:id="@+id/bubble"
@@ -59,7 +75,7 @@
             android:layout_marginTop="2dp"
             android:textColor="@color/text_secondary"
             android:textSize="11sp"
-            tools:text="05/10/2026 21:30" />
+            tools:text="21:30" />
 
     </LinearLayout>
 

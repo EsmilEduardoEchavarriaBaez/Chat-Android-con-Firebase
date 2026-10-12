@@ -27,14 +27,22 @@ class MessageAdapter(
         private val imageCornerRadius = (12 * binding.root.resources.displayMetrics.density).toInt()
 
         // Llena una burbuja con el nombre, el texto o la imagen y la hora
-        fun bind(message: Message) {
+        fun bind(message: Message, previousMessage: Message?) {
             val isMine = message.senderId == currentUserId
+
+            // La fecha solo se muestra cuando el mensaje es de un día distinto al anterior
+            if (previousMessage == null || !DateUtils.isSameDay(previousMessage.timestamp, message.timestamp)) {
+                binding.tvDateHeader.text = DateUtils.formatDay(message.timestamp)
+                binding.tvDateHeader.visibility = View.VISIBLE
+            } else {
+                binding.tvDateHeader.visibility = View.GONE
+            }
 
             // Mi nombre no hace falta en mis propios mensajes
             binding.tvSenderName.text = message.senderName
             binding.tvSenderName.visibility =
                 if (isMine || message.senderName.isEmpty()) View.GONE else View.VISIBLE
-            binding.tvTime.text = DateUtils.formatTimestampFull(message.timestamp)
+            binding.tvTime.text = DateUtils.formatTime(message.timestamp)
 
             // Si es una imagen se carga con Glide desde la URL de Storage, si no se muestra el texto
             if (message.type == Constants.MESSAGE_TYPE_IMAGE) {
@@ -70,9 +78,23 @@ class MessageAdapter(
         return MessageViewHolder(binding)
     }
 
-    // Pasa el mensaje de esa posición a su vista
+    // Pasa el mensaje de esa posición y el anterior (para saber si cambia el día) a su vista
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        val previousMessage = if (position > 0) getItem(position - 1) else null
+        holder.bind(getItem(position), previousMessage)
+    }
+
+    // Si cambia el primer mensaje de la lista, se vuelven a dibujar los afectados para recalcular su fecha
+    override fun onCurrentListChanged(previousList: MutableList<Message>, currentList: MutableList<Message>) {
+        val oldFirstMessage = previousList.firstOrNull() ?: return
+        val newPosition = currentList.indexOf(oldFirstMessage)
+        if (newPosition > 0) {
+            // Se cargaron mensajes viejos arriba y el que era el primero ahora tiene uno antes
+            notifyItemChanged(newPosition)
+        } else if (newPosition < 0 && currentList.isNotEmpty()) {
+            // Se quitó el más viejo (solo se guardan los últimos), así que el nuevo primero debe mostrar su fecha
+            notifyItemChanged(0)
+        }
     }
 
     class MessageDiffCallback : DiffUtil.ItemCallback<Message>() {
