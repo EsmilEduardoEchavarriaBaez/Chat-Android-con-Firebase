@@ -6,19 +6,18 @@ import java.util.*
 
 object DateUtils {
 
+    // Los formatos se crean una sola vez y se reutilizan, en vez de crear uno nuevo por cada mensaje
+    private val timeFormat = SimpleDateFormat("HH:mm", Locale("es", "DO"))
+    private val fullFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale("es", "DO"))
 
     // Convierte la hora en milisegundos al formato HH:mm
     fun formatTimestamp(timestamp: Long): String {
-        val date = Date(timestamp)
-        val format = SimpleDateFormat("HH:mm", Locale.getDefault())
-        return format.format(date)
+        return timeFormat.format(Date(timestamp))
     }
 
     // Convierte la hora en milisegundos al formato dd/MM/yyyy HH:mm
     fun formatTimestampFull(timestamp: Long): String {
-        val date = Date(timestamp)
-        val format = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-        return format.format(date)
+        return fullFormat.format(Date(timestamp))
     }
 
 

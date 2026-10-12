@@ -24,9 +24,14 @@ class UsersViewModel(application: Application) : AndroidViewModel(application) {
     val usersList: LiveData<Resource<List<User>>> = _usersList
 
     private var isListeningNotifications = false
+    private var isTokenSaved = false
 
     // Pide la lista de usuarios al repositorio
     fun loadUsers() {
+        // Si ya se cargaron (por ejemplo al girar la pantalla) no se vuelven a pedir a Firebase
+        if (_usersList.value is Resource.Success) {
+            return
+        }
         _usersList.value = Resource.Loading
         repository.getAllUsersExceptCurrent { result ->
             _usersList.value = result
@@ -35,6 +40,11 @@ class UsersViewModel(application: Application) : AndroidViewModel(application) {
 
     // Guarda el token de notificaciones del usuario
     fun saveFcmToken() {
+        // Basta con guardarlo una vez, no cada vez que se gira la pantalla
+        if (isTokenSaved) {
+            return
+        }
+        isTokenSaved = true
         repository.saveCurrentFcmToken()
     }
 
