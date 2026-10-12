@@ -1,17 +1,24 @@
 package com.example.proyecto1.viewmodel
 
+import android.app.Application
 import android.net.Uri
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.proyecto1.model.Message
 import com.example.proyecto1.model.Resource
 import com.example.proyecto1.repository.ChatRepository
 import com.example.proyecto1.repository.StorageRepository
 import com.example.proyecto1.repository.UserRepository
 import com.example.proyecto1.util.Constants
+import com.example.proyecto1.util.ImageUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class ChatViewModel : ViewModel() {
+// Es AndroidViewModel porque necesita el contexto de la app para comprimir las imágenes
+class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
     private val chatRepository = ChatRepository()
     private val userRepository = UserRepository()
@@ -102,10 +109,26 @@ class ChatViewModel : ViewModel() {
         saveMessage(message)
     }
 
-    // Sube la imagen y después envía el mensaje con su URL
+    // Comprime la imagen, la sube y después envía el mensaje con su URL
     fun sendImage(imageUri: Uri) {
         _isUploading.value = true
-        storageRepository.uploadImage(chatId, imageUri) { result ->
+        viewModelScope.launch {
+            // La compresión se hace en segundo plano para no congelar la pantalla
+            val imageData = withContext(Dispatchers.IO) {
+                ImageUtils.compressImage(getApplication(), imageUri)
+            }
+            if (imageData == null) {
+                _isUploading.value = false
+                _error.value = "No se pudo leer la imagen"
+                return@launch
+            }
+            uploadImage(imageData)
+        }
+    }
+
+    // Sube la imagen a Storage y si sale bien guarda el mensaje con su URL
+    private fun uploadImage(imageData: ByteArray) {
+        storageRepository.uploadImage(chatId, imageData) { result ->
             _isUploading.value = false
             when (result) {
                 is Resource.Success -> {
