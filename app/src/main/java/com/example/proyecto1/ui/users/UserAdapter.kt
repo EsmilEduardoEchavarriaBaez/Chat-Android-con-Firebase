@@ -2,17 +2,16 @@ package com.example.proyecto1.ui.users
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.proyecto1.databinding.ItemUserBinding
 import com.example.proyecto1.model.User
 
+// ListAdapter compara la lista vieja con la nueva y solo redibuja los usuarios que cambiaron
 class UserAdapter(
-
-
-    private val users: List<User>,
     private val onUserClick: (User) -> Unit
-
-         ) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
+) : ListAdapter<User, UserAdapter.UserViewHolder>(UserDiffCallback()) {
 
     inner class UserViewHolder(private val binding: ItemUserBinding) : RecyclerView.ViewHolder(binding.root) {
         // Muestra el nombre y el correo del usuario y detecta el toque
@@ -34,9 +33,18 @@ class UserAdapter(
 
     // Pasa el usuario de esa posición a su vista
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.bind(users[position])
+        holder.bind(getItem(position))
     }
 
-    // Devuelve cuántos usuarios hay en la lista
-    override fun getItemCount(): Int = users.size
+    class UserDiffCallback : DiffUtil.ItemCallback<User>() {
+        // Revisa si dos usuarios son el mismo usando su uid
+        override fun areItemsTheSame(oldItem: User, newItem: User): Boolean {
+            return oldItem.uid == newItem.uid
+        }
+
+        // Revisa si los datos del usuario cambiaron
+        override fun areContentsTheSame(oldItem: User, newItem: User): Boolean {
+            return oldItem == newItem
+        }
+    }
 }

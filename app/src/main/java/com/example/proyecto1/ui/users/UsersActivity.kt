@@ -24,6 +24,7 @@ import com.example.proyecto1.viewmodel.UsersViewModel
 class UsersActivity : AppCompatActivity()  {
 
     private lateinit var binding: ActivityUsersBinding
+    private lateinit var userAdapter: UserAdapter
     private val viewModel: UsersViewModel by viewModels()
 
     // Pide el permiso de notificaciones (solo hace falta desde Android 13)
@@ -63,11 +64,14 @@ class UsersActivity : AppCompatActivity()  {
     // Configura la lista de usuarios
     private fun setupRecyclerView()
     {
+        // El adaptador se crea una sola vez y después solo se le pasan los datos nuevos
+        userAdapter = UserAdapter { user ->
+            openChat(user)
+        }
         binding.rvUsers.layoutManager = LinearLayoutManager(this)
-
-
-
-
+        // La lista no cambia de tamaño con su contenido, así se evitan cálculos de más
+        binding.rvUsers.setHasFixedSize(true)
+        binding.rvUsers.adapter = userAdapter
     }
 
     // Carga los usuarios y los muestra en la lista
@@ -78,10 +82,7 @@ class UsersActivity : AppCompatActivity()  {
                 is Resource.Loading -> showLoading(true)
                 is Resource.Success -> {
                     showLoading(false)
-                    val adapter = UserAdapter(state.data) { user ->
-                        openChat(user)
-                    }
-                    binding.rvUsers.adapter = adapter
+                    userAdapter.submitList(state.data)
                 }
                 is Resource.Error -> {
                     showLoading(false)

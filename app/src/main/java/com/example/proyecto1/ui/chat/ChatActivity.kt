@@ -70,10 +70,12 @@ class ChatActivity : AppCompatActivity() {
                 is Resource.Loading -> binding.progressBar.visibility = View.VISIBLE
                 is Resource.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    adapter.setMessages(state.data)
-                    // Baja hasta el último mensaje
-                    if (state.data.isNotEmpty()) {
-                        binding.rvMessages.scrollToPosition(state.data.size - 1)
+                    // submitList calcula las diferencias y solo redibuja los mensajes que cambiaron
+                    adapter.submitList(state.data) {
+                        // Baja hasta el último mensaje
+                        if (state.data.isNotEmpty()) {
+                            binding.rvMessages.scrollToPosition(state.data.size - 1)
+                        }
                     }
                 }
                 is Resource.Error -> {
@@ -109,6 +111,8 @@ class ChatActivity : AppCompatActivity() {
         // Igual que en WhatsApp, la lista empieza desde abajo
         layoutManager.stackFromEnd = true
         binding.rvMessages.layoutManager = layoutManager
+        // La lista no cambia de tamaño con su contenido, así se evitan cálculos de más
+        binding.rvMessages.setHasFixedSize(true)
         binding.rvMessages.adapter = adapter
     }
 }
