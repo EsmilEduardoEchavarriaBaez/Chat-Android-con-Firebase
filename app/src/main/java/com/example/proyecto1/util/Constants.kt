@@ -15,6 +15,9 @@ object Constants {
     const val MESSAGE_TYPE_TEXT = "TEXT"
     const val MESSAGE_TYPE_IMAGE = "IMAGE"
 
+    // Cantidad de mensajes que se cargan cada vez (los más recientes primero)
+    const val MESSAGES_PAGE_SIZE = 50
+
     // Etiqueta para buscar en Logcat todo lo relacionado con las notificaciones
     const val NOTIFICATIONS_LOG_TAG = "Notificaciones"
 }

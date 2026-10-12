@@ -7,7 +7,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.proyecto1.databinding.ActivityChatBinding
+import com.example.proyecto1.model.Message
 import com.example.proyecto1.model.Resource
 import com.example.proyecto1.util.ActiveChat
 import com.example.proyecto1.util.Constants
@@ -70,13 +72,7 @@ class ChatActivity : AppCompatActivity() {
                 is Resource.Loading -> binding.progressBar.visibility = View.VISIBLE
                 is Resource.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    // submitList calcula las diferencias y solo redibuja los mensajes que cambiaron
-                    adapter.submitList(state.data) {
-                        // Baja hasta el último mensaje
-                        if (state.data.isNotEmpty()) {
-                            binding.rvMessages.scrollToPosition(state.data.size - 1)
-                        }
-                    }
+                    showMessages(state.data)
                 }
                 is Resource.Error -> {
                     binding.progressBar.visibility = View.GONE
@@ -114,5 +110,28 @@ class ChatActivity : AppCompatActivity() {
         // La lista no cambia de tamaño con su contenido, así se evitan cálculos de más
         binding.rvMessages.setHasFixedSize(true)
         binding.rvMessages.adapter = adapter
+
+        // Cuando el usuario sube hasta el primer mensaje se piden los anteriores
+        binding.rvMessages.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            // Se ejecuta cada vez que se desplaza la lista
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dy < 0 && !recyclerView.canScrollVertically(-1)) {
+                    viewModel.loadOlderMessages()
+                }
+            }
+        })
+    }
+
+    // Muestra los mensajes y baja hasta el final solo si llegó uno nuevo
+    private fun showMessages(messages: List<Message>) {
+        val lastIdBefore = adapter.currentList.lastOrNull()?.id
+        // submitList calcula las diferencias y solo redibuja los mensajes que cambiaron
+        adapter.submitList(messages) {
+            // Si solo se agregaron mensajes viejos arriba, la lista se queda donde estaba
+            val lastIdNow = messages.lastOrNull()?.id
+            if (messages.isNotEmpty() && lastIdNow != lastIdBefore) {
+                binding.rvMessages.scrollToPosition(messages.size - 1)
+            }
+        }
     }
 }

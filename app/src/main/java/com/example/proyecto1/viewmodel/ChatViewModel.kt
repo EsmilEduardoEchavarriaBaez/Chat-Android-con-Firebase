@@ -31,6 +31,11 @@ class ChatViewModel : ViewModel() {
     private var otherUserId = ""
     private var currentUserName = ""
 
+    // Cuántos mensajes se están mostrando; crece de a una página al subir en el chat
+    private var messagesLimit = Constants.MESSAGES_PAGE_SIZE
+    private var isLoadingOlder = false
+    private var hasOlderMessages = true
+
     // Devuelve el uid del usuario actual
     fun getCurrentUserId(): String {
         return userRepository.getCurrentUser() ?: ""
@@ -55,9 +60,29 @@ class ChatViewModel : ViewModel() {
         }
 
         _messages.value = Resource.Loading
-        chatRepository.listenMessages(chatId) { result ->
+        listenMessages()
+    }
+
+    // Escucha los mensajes del chat hasta el límite actual
+    private fun listenMessages() {
+        chatRepository.listenMessages(chatId, messagesLimit) { result ->
+            isLoadingOlder = false
+            if (result is Resource.Success) {
+                // Si llegaron menos mensajes que el límite es porque ya no hay más antiguos
+                hasOlderMessages = result.data.size >= messagesLimit
+            }
             _messages.value = result
         }
+    }
+
+    // Pide otra página de mensajes anteriores cuando el usuario llega arriba del chat
+    fun loadOlderMessages() {
+        if (isLoadingOlder || !hasOlderMessages) {
+            return
+        }
+        isLoadingOlder = true
+        messagesLimit += Constants.MESSAGES_PAGE_SIZE
+        listenMessages()
     }
 
     // Envía un mensaje de texto si no está vacío

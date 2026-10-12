@@ -52,12 +52,18 @@ class ChatRepository {
             }
     }
 
-    // Escucha en tiempo real los mensajes del chat ordenados por hora
-    fun listenMessages(chatId: String, onResult: (Resource<List<Message>>) -> Unit) {
+    // Escucha en tiempo real solo los últimos mensajes del chat, sin descargar todo el historial
+    fun listenMessages(chatId: String, limit: Int, onResult: (Resource<List<Message>>) -> Unit) {
+        // Si ya se estaba escuchando (por ejemplo al cargar mensajes anteriores) se quita el listener viejo
+        stopListening()
+
+        // Las claves de push() ya vienen ordenadas por fecha y Firebase siempre las tiene indexadas,
+        // así que limitToLast filtra en el servidor y solo se descargan esos mensajes
         val query = db.child(Constants.CHATS_COLLECTION)
             .child(chatId)
             .child(Constants.MESSAGES_COLLECTION)
-            .orderByChild("timestamp")
+            .orderByKey()
+            .limitToLast(limit)
 
         val listener = object : ValueEventListener {
             // Se ejecuta cada vez que cambian los mensajes y arma la lista
