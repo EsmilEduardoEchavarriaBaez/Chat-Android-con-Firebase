@@ -12,7 +12,7 @@ import com.example.proyecto1.repository.ChatRepository
 import com.example.proyecto1.repository.StorageRepository
 import com.example.proyecto1.repository.UserRepository
 import com.example.proyecto1.util.Constants
-import com.example.proyecto1.util.ImageUtils
+import com.example.proyecto1.util.ImageCompressor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -115,7 +115,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             // La compresión se hace en segundo plano para no congelar la pantalla
             val imageData = withContext(Dispatchers.IO) {
-                ImageUtils.compressImage(getApplication(), imageUri)
+                ImageCompressor.compressImage(getApplication(), imageUri)
             }
             if (imageData == null) {
                 _isUploading.value = false

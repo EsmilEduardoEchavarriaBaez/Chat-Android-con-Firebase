@@ -9,7 +9,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import java.io.ByteArrayOutputStream
 
-object ImageUtils {
+object ImageCompressor {
 
     // Tamaño máximo en píxeles del lado más largo de la imagen que se sube
     private const val MAX_IMAGE_SIZE = 1280
@@ -35,7 +35,7 @@ object ImageUtils {
             bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, stream)
             stream.toByteArray()
         } catch (e: Exception) {
-            Log.e("ImageUtils", "No se pudo comprimir la imagen: ${e.message}")
+            Log.e("ImageCompressor", "No se pudo comprimir la imagen: ${e.message}")
             null
         } finally {
             // Se libera el bitmap para que Glide pueda reutilizar esa memoria
