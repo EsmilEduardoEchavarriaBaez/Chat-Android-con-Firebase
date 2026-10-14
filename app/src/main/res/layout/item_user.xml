@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -8,40 +9,70 @@
             type="com.example.proyecto1.model.User" />
     </data>
 
-    <androidx.cardview.widget.CardView
+    <!-- Tarjeta clara con borde crema, como las del chat -->
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginVertical="8dp"
-        android:elevation="2dp">
+        android:layout_marginVertical="6dp"
+        app:cardBackgroundColor="@color/bubble_received"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:strokeColor="@color/cream_border"
+        app:strokeWidth="1dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
             android:padding="16dp">
 
+            <!-- Círculo con la inicial del nombre, igual que el de arriba en el chat -->
             <TextView
-                android:id="@+id/tvUserName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@{user.name}"
-                android:textSize="16sp"
+                android:id="@+id/tvUserInitial"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_avatar"
+                android:gravity="center"
+                android:importantForAccessibility="no"
+                android:text="@{user.name.isEmpty() ? `?` : user.name.substring(0, 1).toUpperCase()}"
+                android:textColor="@color/coffee_dark"
+                android:textSize="18sp"
                 android:textStyle="bold"
-                tools:text="Nombre de usuario" />
+                tools:text="A" />
 
-            <TextView
-                android:id="@+id/tvUserEmail"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@{user.email}"
-                android:textSize="14sp"
-                android:textColor="?android:attr/textColorSecondary"
-                tools:text="usuario@ejemplo.com" />
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvUserName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{user.name}"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:text="Nombre de usuario" />
+
+                <TextView
+                    android:id="@+id/tvUserEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@{user.email}"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"
+                    tools:text="usuario@ejemplo.com" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </layout>

@@ -1,26 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base application theme. -->
+    <!-- Tema de toda la app: los colores crema y café del chat, así todas las pantallas se ven iguales -->
     <style name="Theme.Projecto1" parent="Theme.Material3.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-    </style>
-
-    <!-- Tema del chat: hereda el de la app pero con colores crema y café -->
-    <style name="Theme.Projecto1.Chat">
+        <!-- Botones, cajas de texto activas y ruedas de carga en café -->
         <item name="colorPrimary">@color/coffee</item>
         <item name="colorPrimaryVariant">@color/coffee_dark</item>
         <item name="colorOnPrimary">@color/cream_background</item>
+        <item name="colorPrimaryContainer">@color/cream_dark</item>
+        <item name="colorOnPrimaryContainer">@color/coffee_dark</item>
+        <item name="colorSecondary">@color/coffee</item>
+        <item name="colorSecondaryVariant">@color/coffee_dark</item>
+        <item name="colorOnSecondary">@color/cream_background</item>
+        <!-- Tarjetas y textos sobre fondo crema -->
+        <item name="colorSurface">@color/bubble_received</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="colorOutline">@color/coffee_light</item>
+        <item name="colorError">@color/error_red</item>
+        <!-- Fondo crema y barra de estado café oscuro con íconos claros -->
+        <item name="android:colorBackground">@color/cream_background</item>
+        <item name="android:windowBackground">@color/cream_background</item>
         <item name="android:statusBarColor">@color/coffee_dark</item>
         <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowBackground">@color/cream_background</item>
+    </style>
+
+    <!-- Cajas de texto claras y redondeadas, como la caja donde se escribe en el chat -->
+    <style name="Widget.Projecto1.TextInput" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@color/bubble_received</item>
+        <item name="boxCornerRadiusTopStart">16dp</item>
+        <item name="boxCornerRadiusTopEnd">16dp</item>
+        <item name="boxCornerRadiusBottomStart">16dp</item>
+        <item name="boxCornerRadiusBottomEnd">16dp</item>
     </style>
 </resources>

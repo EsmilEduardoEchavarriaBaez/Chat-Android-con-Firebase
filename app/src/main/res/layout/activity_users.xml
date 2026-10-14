@@ -5,15 +5,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="16dp"
         tools:context=".ui.users.UsersActivity">
 
+    <!-- Barra de arriba café, igual que la del chat, con mi nombre y el botón para cerrar sesión -->
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:background="@color/coffee"
+            android:elevation="4dp"
             android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
+            android:minHeight="56dp"
+            android:orientation="horizontal"
+            android:paddingVertical="4dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="8dp">
 
         <!-- Muestra "Usuarios" hasta que llega el nombre del usuario que inició sesión -->
         <TextView
@@ -24,14 +29,17 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="@string/users_title"
-                android:textSize="24sp"
+                android:textColor="@color/cream_background"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
         <Button
                 android:id="@+id/btnLogout"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Cerrar sesión" />
+                android:text="Cerrar sesión"
+                android:textColor="@color/cream_background" />
 
     </LinearLayout>
 
@@ -40,19 +48,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginTop="16dp"
             android:visibility="gone" />
 
     <TextView
             android:id="@+id/tvError"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/holo_red_dark"
-            android:visibility="gone"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/error_red"
+            android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvUsers"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingVertical="8dp" />
 
 </LinearLayout>
