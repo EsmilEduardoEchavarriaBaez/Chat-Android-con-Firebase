@@ -34,6 +34,9 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
 
+    // El uid se lee una sola vez y se reutiliza en cada mensaje
+    private val currentUserId = userRepository.getCurrentUser() ?: ""
+
     private var chatId = ""
     private var otherUserId = ""
     private var currentUserName = ""
@@ -45,26 +48,19 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
     // Devuelve el uid del usuario actual
     fun getCurrentUserId(): String {
-        return userRepository.getCurrentUser() ?: ""
+        return currentUserId
     }
 
-    // Inicia el chat, busca el nombre del usuario y empieza a escuchar los mensajes
-    fun startChat(otherUserId: String) {
+    // Inicia el chat con mi nombre (que llega de la lista de usuarios) y empieza a escuchar los mensajes
+    fun startChat(otherUserId: String, currentUserName: String) {
         // Si se gira la pantalla el ViewModel se mantiene, así que no se vuelve a iniciar
         if (chatId.isNotEmpty()) {
             return
         }
 
         this.otherUserId = otherUserId
-        val currentUserId = getCurrentUserId()
+        this.currentUserName = currentUserName
         chatId = chatRepository.getChatId(currentUserId, otherUserId)
-
-        // El nombre se busca una vez para ponerlo en cada mensaje que se envíe
-        userRepository.getUserById(currentUserId) { result ->
-            if (result is Resource.Success) {
-                currentUserName = result.data.name
-            }
-        }
 
         _messages.value = Resource.Loading
         listenMessages()
@@ -102,7 +98,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         val message = Message(
-            senderId = getCurrentUserId(),
+            senderId = currentUserId,
             text = cleanText,
             type = Constants.MESSAGE_TYPE_TEXT
         )
@@ -133,7 +129,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
             when (result) {
                 is Resource.Success -> {
                     val message = Message(
-                        senderId = getCurrentUserId(),
+                        senderId = currentUserId,
                         imageUrl = result.data,
                         type = Constants.MESSAGE_TYPE_IMAGE
                     )
@@ -147,24 +143,9 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // Agrega el nombre del usuario al mensaje y lo envía
+    // Agrega mi nombre al mensaje, lo guarda en la base de datos y avisa si hay un error
     private fun saveMessage(message: Message) {
-        // Si el nombre todavía no había llegado, se busca antes de enviar
-        if (currentUserName.isEmpty()) {
-            userRepository.getUserById(getCurrentUserId()) { result ->
-                if (result is Resource.Success) {
-                    currentUserName = result.data.name
-                }
-                sendToChat(message.copy(senderName = currentUserName))
-            }
-        } else {
-            sendToChat(message.copy(senderName = currentUserName))
-        }
-    }
-
-    // Guarda el mensaje en la base de datos y avisa si hay un error
-    private fun sendToChat(message: Message) {
-        chatRepository.sendMessage(chatId, otherUserId, message) { result ->
+        chatRepository.sendMessage(chatId, otherUserId, message.copy(senderName = currentUserName)) { result ->
             if (result is Resource.Error) {
                 _error.value = "No se pudo enviar el mensaje: ${result.exception.message}"
             }

@@ -41,7 +41,7 @@ object NotificationUtils {
             return
         }
 
-        createChannel(context)
+        // El canal no se crea aquí: ChatApplication lo crea una sola vez al abrir la app
 
         // Al tocar la notificación se abre la app (el login manda a Usuarios si hay sesión)
         val intent = Intent(context, LoginActivity::class.java)

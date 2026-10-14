@@ -9,6 +9,7 @@ object Constants {
 
     const val EXTRA_USER_ID = "userId"
     const val EXTRA_USER_NAME = "userName"
+    const val EXTRA_CURRENT_USER_NAME = "currentUserName"
 
     const val CHAT_IMAGES_FOLDER = "chat_images"
     const val MESSAGE_TYPE_TEXT = "TEXT"

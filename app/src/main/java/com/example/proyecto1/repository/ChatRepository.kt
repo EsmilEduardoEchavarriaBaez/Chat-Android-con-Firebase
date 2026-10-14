@@ -89,9 +89,11 @@ class ChatRepository {
         messagesListener = listener
     }
 
-    // Deja de escuchar los mensajes al cerrar el chat
+    // Deja de escuchar los mensajes al cerrar el chat; si ya se había quitado no hace nada
     fun stopListening() {
         val listener = messagesListener ?: return
         messagesQuery?.removeEventListener(listener)
+        messagesQuery = null
+        messagesListener = null
     }
 }

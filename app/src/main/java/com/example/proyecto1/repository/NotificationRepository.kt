@@ -54,9 +54,11 @@ class NotificationRepository {
         inboxListener = listener
     }
 
-    // Deja de escuchar la bandeja del usuario
+    // Deja de escuchar la bandeja del usuario; si ya se había quitado (al cerrar sesión) no hace nada
     fun stopListening() {
         val listener = inboxListener ?: return
         inboxRef?.removeEventListener(listener)
+        inboxRef = null
+        inboxListener = null
     }
 }

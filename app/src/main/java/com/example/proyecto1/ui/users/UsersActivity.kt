@@ -18,7 +18,6 @@ import com.example.proyecto1.model.User
 import com.example.proyecto1.ui.auth.LoginActivity
 import com.example.proyecto1.ui.chat.ChatActivity
 import com.example.proyecto1.util.Constants
-import com.example.proyecto1.util.NotificationUtils
 import com.example.proyecto1.viewmodel.UsersViewModel
 class UsersActivity : AppCompatActivity()  {
 
@@ -40,6 +39,7 @@ class UsersActivity : AppCompatActivity()  {
         setContentView(binding.root)
 
         setupRecyclerView()
+        showCurrentUser()
         loadUsers()
         setupLogoutButton()
         setupNotifications()
@@ -47,9 +47,15 @@ class UsersActivity : AppCompatActivity()  {
 
     }
 
-    // Crea el canal, guarda el token, escucha los mensajes nuevos y pide el permiso de notificaciones
+    // Pone el nombre del usuario que inició sesión como título (llega junto con la lista de usuarios)
+    private fun showCurrentUser() {
+        viewModel.currentUserName.observe(this) { name ->
+            binding.tvCurrentUser.text = name
+        }
+    }
+
+    // Guarda el token, escucha los mensajes nuevos y pide el permiso de notificaciones
     private fun setupNotifications() {
-        NotificationUtils.createChannel(this)
         viewModel.saveFcmToken()
         viewModel.startNotifications()
 
@@ -92,11 +98,13 @@ class UsersActivity : AppCompatActivity()  {
         }
     }
 
-    // Abre el chat con el usuario elegido pasándole su uid y su nombre
+    // Abre el chat con el usuario elegido pasándole su uid, su nombre y el mío
     private fun openChat(user: User) {
         val intent = Intent(this, ChatActivity::class.java)
         intent.putExtra(Constants.EXTRA_USER_ID, user.uid)
         intent.putExtra(Constants.EXTRA_USER_NAME, user.name)
+        // Mi nombre ya se descargó con la lista, así el chat no tiene que volver a pedirlo a Firebase
+        intent.putExtra(Constants.EXTRA_CURRENT_USER_NAME, viewModel.currentUserName.value)
         startActivity(intent)
     }
 

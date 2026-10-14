@@ -100,7 +100,9 @@ class ChatActivity : AppCompatActivity() {
             Toast.makeText(this, message, Toast.LENGTH_LONG).show()
         }
 
-        viewModel.startChat(otherUserId)
+        // Mi nombre llega desde la lista de usuarios para ponerlo en cada mensaje que envíe
+        val currentUserName = intent.getStringExtra(Constants.EXTRA_CURRENT_USER_NAME) ?: ""
+        viewModel.startChat(otherUserId, currentUserName)
     }
 
     // Marca este chat como abierto para no recibir notificaciones de él

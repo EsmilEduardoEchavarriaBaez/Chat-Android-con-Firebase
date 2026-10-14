@@ -23,18 +23,36 @@ class UsersViewModel(application: Application) : AndroidViewModel(application) {
     private val _usersList = MutableLiveData<Resource<List<User>>>()
     val usersList: LiveData<Resource<List<User>>> = _usersList
 
+    // Nombre del usuario que inició sesión, para mostrarlo arriba de la lista
+    private val _currentUserName = MutableLiveData<String>()
+    val currentUserName: LiveData<String> = _currentUserName
+
     private var isListeningNotifications = false
     private var isTokenSaved = false
 
-    // Pide la lista de usuarios al repositorio
+    // Pide los usuarios a Firebase y separa al que inició sesión del resto
     fun loadUsers() {
         // Si ya se cargaron (por ejemplo al girar la pantalla) no se vuelven a pedir a Firebase
         if (_usersList.value is Resource.Success) {
             return
         }
+        val currentUid = repository.getCurrentUser() ?: run {
+            _usersList.value = Resource.Error(Exception("Usuario no identificado"))
+            return
+        }
+
         _usersList.value = Resource.Loading
-        repository.getAllUsersExceptCurrent { result ->
-            _usersList.value = result
+        repository.getAllUsers { result ->
+            if (result is Resource.Success) {
+                // De la misma descarga sale el nombre para el título, sin hacer otra consulta
+                val currentUser = result.data.find { it.uid == currentUid }
+                if (currentUser != null) {
+                    _currentUserName.value = currentUser.name
+                }
+                _usersList.value = Resource.Success(result.data.filter { it.uid != currentUid })
+            } else {
+                _usersList.value = result
+            }
         }
     }
 

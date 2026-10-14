@@ -20,23 +20,16 @@ class UserRepository {
         return auth.currentUser?.uid
     }
 
-    // Obtiene todos los usuarios menos el que inició sesión
-    fun getAllUsersExceptCurrent(onResult: (Resource<List<User>>) -> Unit)
+    // Descarga todos los usuarios en una sola consulta; el ViewModel separa al que inició sesión del resto
+    fun getAllUsers(onResult: (Resource<List<User>>) -> Unit)
     {
-        val currentUid = auth.currentUser?.uid ?: run {
-            onResult(Resource.Error(Exception("Usuario no indetificado")))
-            return
-        }
-
-
         db.child(Constants.USERS_COLLECTION).get()
-            .addOnSuccessListener {
-                snapshot ->
+            .addOnSuccessListener { snapshot ->
                 val users = mutableListOf<User>()
                 for (child in snapshot.children)
                 {
                     val user = child.getValue(User::class.java)
-                    if (user != null && user.uid != currentUid)
+                    if (user != null)
                     {
                         users.add(user)
                     }
@@ -46,8 +39,6 @@ class UserRepository {
             .addOnFailureListener { exception ->
                 onResult(Resource.Error(exception))
             }
-
-
     }
 
     // Guarda el token de notificaciones en el usuario actual
@@ -75,26 +66,6 @@ class UserRepository {
         FirebaseMessaging.getInstance().token
             .addOnSuccessListener { token ->
                 updateFcmToken(token) { }
-            }
-    }
-
-    // Busca un usuario por su uid
-    fun getUserById(uid: String, onResult: (Resource<User>) -> Unit)
-    {
-        db.child(Constants.USERS_COLLECTION)
-            .child(uid)
-            .get()
-            .addOnSuccessListener { snapshot ->
-                val user = snapshot.getValue(User::class.java)
-                if (user != null)
-                {
-                    onResult(Resource.Success(user))
-                } else {
-                    onResult(Resource.Error(Exception("Usuario no verificado")))
-                }
-            }
-            .addOnFailureListener { exception ->
-                onResult(Resource.Error(exception))
             }
     }
 
