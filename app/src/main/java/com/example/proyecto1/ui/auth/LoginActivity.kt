@@ -25,19 +25,23 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
+        // Carga el diseño XML de la pantalla de login
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Al tocar "Iniciar sesión" se leen el correo y la contraseña y se le pasan al ViewModel
         binding.btnLogin.setOnClickListener {
             val email = binding.etEmail.text.toString()
             val password = binding.etPassword.text.toString()
             viewModel.login(email, password)
         }
 
+        // El enlace de registro abre la pantalla para crear una cuenta
         binding.tvGoToRegister.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
 
+        // Según el estado del login: muestra la carga, entra a la lista o muestra el error
         viewModel.authState.observe(this) { state ->
             when (state) {
                 is Resource.Loading -> showLoading(true)
@@ -58,6 +62,7 @@ class LoginActivity : AppCompatActivity() {
     private fun showLoading(isLoading: Boolean) {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         binding.btnLogin.isEnabled = !isLoading
+        // Al empezar una carga nueva se esconde el error anterior
         if (isLoading) {
             binding.tvError.visibility = View.GONE
         }

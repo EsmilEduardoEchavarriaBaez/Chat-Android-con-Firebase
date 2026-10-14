@@ -36,11 +36,13 @@ class UsersViewModel(application: Application) : AndroidViewModel(application) {
         if (_usersList.value is Resource.Success) {
             return
         }
+        // Sin sesión iniciada no se sabe quién es el usuario actual, así que se muestra un error
         val currentUid = repository.getCurrentUser() ?: run {
             _usersList.value = Resource.Error(Exception("Usuario no identificado"))
             return
         }
 
+        // Muestra la carga y descarga todos los usuarios de una vez
         _usersList.value = Resource.Loading
         repository.getAllUsers { result ->
             if (result is Resource.Success) {
@@ -49,8 +51,10 @@ class UsersViewModel(application: Application) : AndroidViewModel(application) {
                 if (currentUser != null) {
                     _currentUserName.value = currentUser.name
                 }
+                // La lista muestra a todos menos al usuario actual
                 _usersList.value = Resource.Success(result.data.filter { it.uid != currentUid })
             } else {
+                // Si la descarga falló, el error se pasa a la pantalla
                 _usersList.value = result
             }
         }
@@ -62,6 +66,7 @@ class UsersViewModel(application: Application) : AndroidViewModel(application) {
         if (isTokenSaved) {
             return
         }
+        // Se marca como guardado y se pide el token a Firebase para guardarlo
         isTokenSaved = true
         repository.saveCurrentFcmToken()
     }
@@ -72,12 +77,15 @@ class UsersViewModel(application: Application) : AndroidViewModel(application) {
         if (isListeningNotifications) {
             return
         }
+        // Se toma el uid del usuario y se marca que ya se está escuchando
         val uid = repository.getCurrentUser() ?: return
         isListeningNotifications = true
 
+        // Por cada aviso que llega a la bandeja se decide si mostrar la notificación
         notificationRepository.listenNewMessages(uid) { message ->
             // Si ya se está chateando con esa persona no hace falta avisar
             if (message.senderId != ActiveChat.userId) {
+                // Arma el aviso con el nombre de quien escribió y su texto (o "Te envió una imagen")
                 val sender = message.senderName.ifEmpty { "un usuario" }
                 val body = if (message.type == Constants.MESSAGE_TYPE_IMAGE) "Te envió una imagen" else message.text
                 NotificationUtils.showNotification(getApplication(), "Nuevo mensaje de $sender", body)

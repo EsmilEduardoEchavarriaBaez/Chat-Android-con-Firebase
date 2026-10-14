@@ -19,6 +19,7 @@ class AuthRepository {
 
     // Inicia sesión en Firebase con correo y contraseña
     fun login(email: String, password: String, onResult: (Resource<FirebaseUser>) -> Unit) {
+        // Si Firebase acepta el correo y la contraseña devuelve el usuario; si no, el error
         auth.signInWithEmailAndPassword(email, password)
             .addOnSuccessListener { result ->
                 onResult(Resource.Success(result.user!!))
@@ -30,12 +31,12 @@ class AuthRepository {
 
     // Crea la cuenta y guarda los datos del usuario en la base de datos
     fun register(name: String, email: String, password: String, onResult: (Resource<FirebaseUser>) -> Unit) {
+        // Primero se crea la cuenta en Firebase Authentication
         auth.createUserWithEmailAndPassword(email, password)
             .addOnSuccessListener { result ->
                 val firebaseUser = result.user!!
 
-                // Se guarda el usuario en la base de datos
-                // para poder mostrarlo después en la lista de usuarios
+                // Se guarda el usuario en users/{uid} para mostrarlo después en la lista de usuarios
                 val user = User(uid = firebaseUser.uid, name = name, email = email)
                 db.child(Constants.USERS_COLLECTION)
                     .child(firebaseUser.uid)

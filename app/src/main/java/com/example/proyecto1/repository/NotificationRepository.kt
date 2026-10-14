@@ -19,6 +19,7 @@ class NotificationRepository {
 
     // Escucha la bandeja del usuario y avisa por cada mensaje nuevo que le llega
     fun listenNewMessages(uid: String, onNewMessage: (Message) -> Unit) {
+        // La bandeja del usuario es notifications/{uid}
         val ref = db.child(Constants.NOTIFICATIONS_COLLECTION).child(uid)
         Log.d(Constants.NOTIFICATIONS_LOG_TAG, "Escuchando la bandeja de $uid")
 
@@ -26,6 +27,7 @@ class NotificationRepository {
             // Se ejecuta una vez por cada aviso nuevo en la bandeja
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 Log.d(Constants.NOTIFICATIONS_LOG_TAG, "Llegó un aviso: ${snapshot.key}")
+                // Convierte el aviso en un mensaje y se lo pasa al ViewModel para que decida si notificar
                 val message = snapshot.getValue(Message::class.java)
                 if (message != null) {
                     onNewMessage(message)
@@ -49,6 +51,7 @@ class NotificationRepository {
             }
         }
 
+        // Empieza a escuchar y guarda la referencia y el listener para poder quitarlos después
         ref.addChildEventListener(listener)
         inboxRef = ref
         inboxListener = listener

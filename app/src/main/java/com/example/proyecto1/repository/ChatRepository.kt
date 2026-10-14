@@ -31,6 +31,7 @@ class ChatRepository {
             .child(Constants.MESSAGES_COLLECTION)
             .push()
 
+        // Se le pone al mensaje el id que generó push() y se guarda en el chat
         val messageWithId = message.copy(id = messageRef.key ?: "")
         messageRef.setValue(messageWithId)
             .addOnSuccessListener {
@@ -45,6 +46,7 @@ class ChatRepository {
                     .addOnFailureListener { exception ->
                         Log.e(Constants.NOTIFICATIONS_LOG_TAG, "No se pudo dejar el aviso en la bandeja: ${exception.message}")
                     }
+                // El mensaje ya quedó guardado, así que se avisa que salió bien
                 onResult(Resource.Success(Unit))
             }
             .addOnFailureListener { exception ->
@@ -57,8 +59,7 @@ class ChatRepository {
         // Si ya se estaba escuchando (por ejemplo al cargar mensajes anteriores) se quita el listener viejo
         stopListening()
 
-        // Las claves de push() ya vienen ordenadas por fecha y Firebase siempre las tiene indexadas,
-        // así que limitToLast filtra en el servidor y solo se descargan esos mensajes
+        // Las claves de push() van ordenadas por fecha, así que limitToLast filtra en el servidor y solo baja esos mensajes
         val query = db.child(Constants.CHATS_COLLECTION)
             .child(chatId)
             .child(Constants.MESSAGES_COLLECTION)
@@ -84,6 +85,7 @@ class ChatRepository {
             }
         }
 
+        // Empieza a escuchar y guarda la consulta y el listener para poder quitarlos después
         query.addValueEventListener(listener)
         messagesQuery = query
         messagesListener = listener

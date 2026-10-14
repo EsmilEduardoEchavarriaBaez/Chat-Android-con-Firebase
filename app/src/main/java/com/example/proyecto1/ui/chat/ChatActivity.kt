@@ -35,19 +35,23 @@ class ChatActivity : AppCompatActivity() {
     // Prepara la pantalla del chat, sus botones y observa los mensajes
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Carga el diseño XML de la pantalla del chat
         binding = ActivityChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         // Datos del otro usuario que llegan desde la lista de usuarios
         otherUserId = intent.getStringExtra(Constants.EXTRA_USER_ID) ?: ""
         val otherUserName = intent.getStringExtra(Constants.EXTRA_USER_NAME) ?: ""
+        // Sin el uid del otro usuario no hay chat que abrir, así que se cierra la pantalla
         if (otherUserId.isEmpty()) {
             finish()
             return
         }
+        // El nombre del contacto va como título del chat
         binding.tvChatTitle.text = otherUserName
         // En el círculo de arriba se pone la primera letra del nombre
         binding.tvAvatar.text = otherUserName.take(1).uppercase().ifEmpty { "?" }
+        // Texto que se muestra en el centro cuando todavía no hay mensajes
         binding.tvEmpty.text = getString(R.string.chat_empty, otherUserName.ifEmpty { "este usuario" })
 
         // La flecha cierra el chat y vuelve a la lista de usuarios
@@ -55,6 +59,7 @@ class ChatActivity : AppCompatActivity() {
             finish()
         }
 
+        // Prepara la lista donde se muestran los mensajes
         setupRecyclerView()
 
         // El botón de enviar se activa o se apaga según si hay texto escrito
@@ -63,12 +68,14 @@ class ChatActivity : AppCompatActivity() {
             updateSendButton()
         }
 
+        // Al enviar: el botón rebota, el texto va al ViewModel y la caja se limpia
         binding.btnSend.setOnClickListener {
             animateSendButton()
             viewModel.sendMessage(binding.etMessage.text.toString())
             binding.etMessage.setText("")
         }
 
+        // El botón de imagen abre la galería para elegir una foto
         binding.btnImage.setOnClickListener {
             pickImageLauncher.launch("image/*")
         }
@@ -79,6 +86,7 @@ class ChatActivity : AppCompatActivity() {
             binding.btnImage.isEnabled = !isUploading
         }
 
+        // Según el estado de los mensajes: muestra la carga, la conversación o el error
         viewModel.messages.observe(this) { state ->
             when (state) {
                 is Resource.Loading -> {
@@ -96,6 +104,7 @@ class ChatActivity : AppCompatActivity() {
             }
         }
 
+        // Si algo falla al enviar o subir una imagen, se muestra un aviso corto
         viewModel.error.observe(this) { message ->
             Toast.makeText(this, message, Toast.LENGTH_LONG).show()
         }
@@ -119,6 +128,7 @@ class ChatActivity : AppCompatActivity() {
 
     // Configura la lista de mensajes para que empiece desde abajo
     private fun setupRecyclerView() {
+        // El adaptador recibe mi uid para saber qué mensajes van a la derecha
         adapter = MessageAdapter(viewModel.getCurrentUserId())
         val layoutManager = LinearLayoutManager(this)
         // Igual que en WhatsApp, la lista empieza desde abajo
@@ -132,6 +142,7 @@ class ChatActivity : AppCompatActivity() {
         binding.rvMessages.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             // Se ejecuta cada vez que se desplaza la lista
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                // Si se está subiendo y ya no se puede subir más, se piden los mensajes anteriores
                 if (dy < 0 && !recyclerView.canScrollVertically(-1)) {
                     viewModel.loadOlderMessages()
                 }
@@ -144,6 +155,7 @@ class ChatActivity : AppCompatActivity() {
         // Si todavía no hay mensajes se muestra un aviso en el centro
         binding.tvEmpty.visibility = if (messages.isEmpty()) View.VISIBLE else View.GONE
 
+        // Se guarda el último mensaje que había para saber después si llegó uno nuevo
         val lastIdBefore = adapter.currentList.lastOrNull()?.id
         // submitList calcula las diferencias y solo redibuja los mensajes que cambiaron
         adapter.submitList(messages) {

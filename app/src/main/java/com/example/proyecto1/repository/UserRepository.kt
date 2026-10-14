@@ -23,8 +23,10 @@ class UserRepository {
     // Descarga todos los usuarios en una sola consulta; el ViewModel separa al que inició sesión del resto
     fun getAllUsers(onResult: (Resource<List<User>>) -> Unit)
     {
+        // Lee la rama users una sola vez (no se queda escuchando cambios)
         db.child(Constants.USERS_COLLECTION).get()
             .addOnSuccessListener { snapshot ->
+                // Convierte cada hijo de users en un objeto User y lo agrega a la lista
                 val users = mutableListOf<User>()
                 for (child in snapshot.children)
                 {
@@ -44,11 +46,13 @@ class UserRepository {
     // Guarda el token de notificaciones en el usuario actual
     fun updateFcmToken(fcmToken: String, onResult: (Resource<Unit>) -> Unit)
     {
+        // Sin sesión iniciada no hay usuario donde guardar el token
         val uid = auth.currentUser?.uid ?: run{
             onResult(Resource.Error(Exception("Usuario no indetificado")))
             return
         }
 
+        // Guarda el token en users/{uid}/fcmToken
         db.child(Constants.USERS_COLLECTION)
             .child(uid)
             .child("fcmToken")

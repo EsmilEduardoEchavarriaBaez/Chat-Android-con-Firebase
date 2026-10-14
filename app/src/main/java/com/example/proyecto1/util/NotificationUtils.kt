@@ -19,12 +19,14 @@ object NotificationUtils {
 
     // Crea el canal de notificaciones de los mensajes
     fun createChannel(context: Context) {
+        // Los canales existen desde Android 8; en versiones anteriores no hacen falta
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 context.getString(R.string.notification_channel_id),
                 context.getString(R.string.notification_channel_name),
                 NotificationManager.IMPORTANCE_HIGH
             )
+            // Se registra el canal en el sistema (si ya existe no pasa nada)
             val manager = context.getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(channel)
         }
@@ -51,6 +53,7 @@ object NotificationUtils {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        // Arma la notificación con el ícono, el título, el texto y la acción al tocarla
         val notification = NotificationCompat.Builder(context, context.getString(R.string.notification_channel_id))
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)

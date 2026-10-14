@@ -35,9 +35,11 @@ class UsersActivity : AppCompatActivity()  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Carga el diseño XML de la lista de usuarios
         binding = ActivityUsersBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Prepara la lista, el título, los datos, el botón de salir y las notificaciones
         setupRecyclerView()
         showCurrentUser()
         loadUsers()
@@ -56,9 +58,11 @@ class UsersActivity : AppCompatActivity()  {
 
     // Guarda el token, escucha los mensajes nuevos y pide el permiso de notificaciones
     private fun setupNotifications() {
+        // Guarda el token del teléfono y empieza a escuchar la bandeja de avisos
         viewModel.saveFcmToken()
         viewModel.startNotifications()
 
+        // Desde Android 13 se pide el permiso de notificaciones si todavía no se ha dado
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
             != PackageManager.PERMISSION_GRANTED
@@ -73,6 +77,7 @@ class UsersActivity : AppCompatActivity()  {
         userAdapter = UserAdapter { user ->
             openChat(user)
         }
+        // Los usuarios se muestran uno debajo del otro
         binding.rvUsers.layoutManager = LinearLayoutManager(this)
         // La lista no cambia de tamaño con su contenido, así se evitan cálculos de más
         binding.rvUsers.setHasFixedSize(true)
@@ -81,7 +86,9 @@ class UsersActivity : AppCompatActivity()  {
 
     // Carga los usuarios y los muestra en la lista
     private fun loadUsers() {
+        // Pide los usuarios al ViewModel (si ya estaban cargados no se vuelven a pedir)
         viewModel.loadUsers()
+        // Según el estado: muestra la carga, llena la lista o muestra el error
         viewModel.usersList.observe(this) { state ->
             when (state) {
                 is Resource.Loading -> showLoading(true)
@@ -100,6 +107,7 @@ class UsersActivity : AppCompatActivity()  {
 
     // Abre el chat con el usuario elegido pasándole su uid, su nombre y el mío
     private fun openChat(user: User) {
+        // Prepara la pantalla del chat con el uid y el nombre de la persona elegida
         val intent = Intent(this, ChatActivity::class.java)
         intent.putExtra(Constants.EXTRA_USER_ID, user.uid)
         intent.putExtra(Constants.EXTRA_USER_NAME, user.name)
@@ -111,6 +119,7 @@ class UsersActivity : AppCompatActivity()  {
     // Cierra la sesión y vuelve al login
     private fun setupLogoutButton() {
         binding.btnLogout.setOnClickListener {
+            // Cierra la sesión, abre el login y quita esta pantalla
             viewModel.logout()
             startActivity(Intent(this, LoginActivity::class.java))
             finish()

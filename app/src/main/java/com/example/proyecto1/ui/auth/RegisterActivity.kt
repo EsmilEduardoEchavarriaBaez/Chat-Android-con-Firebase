@@ -18,9 +18,11 @@ class RegisterActivity : AppCompatActivity() {
     // Prepara la pantalla de registro y sus botones
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Carga el diseño XML de la pantalla de registro
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Al tocar "Crear cuenta" se leen los tres campos y se le pasan al ViewModel
         binding.btnRegister.setOnClickListener {
             val name = binding.etName.text.toString()
             val email = binding.etEmail.text.toString()
@@ -28,10 +30,12 @@ class RegisterActivity : AppCompatActivity() {
             viewModel.register(name, email, password)
         }
 
+        // "¿Ya tienes cuenta?" cierra esta pantalla y vuelve al login, que sigue abierto debajo
         binding.tvGoToLogin.setOnClickListener {
             finish()
         }
 
+        // Según el estado del registro: muestra la carga, entra a la lista o muestra el error
         viewModel.authState.observe(this) { state ->
             when (state) {
                 is Resource.Loading -> showLoading(true)
@@ -52,6 +56,7 @@ class RegisterActivity : AppCompatActivity() {
     private fun showLoading(isLoading: Boolean) {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         binding.btnRegister.isEnabled = !isLoading
+        // Al empezar una carga nueva se esconde el error anterior
         if (isLoading) {
             binding.tvError.visibility = View.GONE
         }

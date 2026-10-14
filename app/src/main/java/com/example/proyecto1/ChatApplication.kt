@@ -18,8 +18,7 @@ class ChatApplication : Application() {
             DebugAppCheckProviderFactory.getInstance()
         )
 
-        // Guarda en el teléfono una copia de los datos de Realtime Database; así al volver
-        // a abrir un chat no se descarga todo otra vez y la app sigue funcionando sin internet
+        // Guarda una copia de Realtime Database en el teléfono para no descargar todo otra vez y funcionar sin internet
         FirebaseDatabase.getInstance().setPersistenceEnabled(true)
 
         // El canal de notificaciones se crea una sola vez aquí, en vez de cada vez que se muestra una

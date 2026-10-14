@@ -28,6 +28,7 @@ class MessageAdapter(
 
         // Llena una burbuja con el nombre, el texto o la imagen y la hora
         fun bind(message: Message, previousMessage: Message?) {
+            // Revisa si el mensaje lo envié yo
             val isMine = message.senderId == currentUserId
 
             // La fecha solo se muestra cuando el mensaje es de un día distinto al anterior
@@ -42,6 +43,7 @@ class MessageAdapter(
             binding.tvSenderName.text = message.senderName
             binding.tvSenderName.visibility =
                 if (isMine || message.senderName.isEmpty()) View.GONE else View.VISIBLE
+            // La hora del mensaje en formato HH:mm
             binding.tvTime.text = DateUtils.formatTime(message.timestamp)
 
             // Si es una imagen se carga con Glide desde la URL de Storage, si no se muestra el texto
@@ -86,6 +88,7 @@ class MessageAdapter(
 
     // Si cambia el primer mensaje de la lista, se vuelven a dibujar los afectados para recalcular su fecha
     override fun onCurrentListChanged(previousList: MutableList<Message>, currentList: MutableList<Message>) {
+        // Busca dónde quedó el que antes era el primer mensaje de la lista
         val oldFirstMessage = previousList.firstOrNull() ?: return
         val newPosition = currentList.indexOf(oldFirstMessage)
         if (newPosition > 0) {

@@ -17,6 +17,7 @@ object DateUtils {
 
     // Devuelve "Hoy", "Ayer" o la fecha dd/MM/yyyy para separar los mensajes por día
     fun formatDay(timestamp: Long): String {
+        // Se compara la fecha del mensaje con la de hoy y la de ayer
         val day = dayFormat.format(Date(timestamp))
         val today = dayFormat.format(Date())
         val yesterday = dayFormat.format(Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000))

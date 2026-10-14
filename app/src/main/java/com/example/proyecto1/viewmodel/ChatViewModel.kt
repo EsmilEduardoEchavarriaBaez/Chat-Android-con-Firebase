@@ -58,10 +58,12 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
 
+        // Guarda los datos del chat y calcula su id a partir de los dos uid
         this.otherUserId = otherUserId
         this.currentUserName = currentUserName
         chatId = chatRepository.getChatId(currentUserId, otherUserId)
 
+        // Muestra la carga mientras llegan los primeros mensajes
         _messages.value = Resource.Loading
         listenMessages()
     }
@@ -69,20 +71,24 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     // Escucha los mensajes del chat hasta el límite actual
     private fun listenMessages() {
         chatRepository.listenMessages(chatId, messagesLimit) { result ->
+            // Cuando llegan los mensajes termina cualquier carga de mensajes anteriores
             isLoadingOlder = false
             if (result is Resource.Success) {
                 // Si llegaron menos mensajes que el límite es porque ya no hay más antiguos
                 hasOlderMessages = result.data.size >= messagesLimit
             }
+            // Se pasa la lista (o el error) a la pantalla
             _messages.value = result
         }
     }
 
     // Pide otra página de mensajes anteriores cuando el usuario llega arriba del chat
     fun loadOlderMessages() {
+        // No se pide otra página si ya se está cargando o si no quedan mensajes viejos
         if (isLoadingOlder || !hasOlderMessages) {
             return
         }
+        // Se agranda el límite en una página y se vuelve a escuchar
         isLoadingOlder = true
         messagesLimit += Constants.MESSAGES_PAGE_SIZE
         listenMessages()
@@ -90,6 +96,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
     // Envía un mensaje de texto si no está vacío
     fun sendMessage(text: String) {
+        // Se quitan los espacios del principio y del final
         val cleanText = text.trim()
 
         // No se envían mensajes vacíos
@@ -97,6 +104,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
 
+        // Se arma el mensaje de texto con mi uid y se guarda
         val message = Message(
             senderId = currentUserId,
             text = cleanText,
@@ -107,17 +115,20 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
     // Comprime la imagen, la sube y después envía el mensaje con su URL
     fun sendImage(imageUri: Uri) {
+        // Se enciende la ruedita y el trabajo se hace en una corrutina del ViewModel
         _isUploading.value = true
         viewModelScope.launch {
             // La compresión se hace en segundo plano para no congelar la pantalla
             val imageData = withContext(Dispatchers.IO) {
                 ImageCompressor.compressImage(getApplication(), imageUri)
             }
+            // Si la imagen no se pudo leer se apaga la ruedita y se avisa
             if (imageData == null) {
                 _isUploading.value = false
                 _error.value = "No se pudo leer la imagen"
                 return@launch
             }
+            // Si se comprimió bien, se sube a Storage
             uploadImage(imageData)
         }
     }
@@ -125,9 +136,11 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     // Sube la imagen a Storage y si sale bien guarda el mensaje con su URL
     private fun uploadImage(imageData: ByteArray) {
         storageRepository.uploadImage(chatId, imageData) { result ->
+            // Al terminar la subida se apaga la ruedita
             _isUploading.value = false
             when (result) {
                 is Resource.Success -> {
+                    // Con la URL de la imagen se arma un mensaje de tipo imagen y se guarda
                     val message = Message(
                         senderId = currentUserId,
                         imageUrl = result.data,
@@ -136,6 +149,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                     saveMessage(message)
                 }
                 is Resource.Error -> {
+                    // Si falló la subida se muestra el error
                     _error.value = "No se pudo subir la imagen: ${result.exception.message}"
                 }
                 is Resource.Loading -> {}
@@ -146,6 +160,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     // Agrega mi nombre al mensaje, lo guarda en la base de datos y avisa si hay un error
     private fun saveMessage(message: Message) {
         chatRepository.sendMessage(chatId, otherUserId, message.copy(senderName = currentUserName)) { result ->
+            // Si no se pudo guardar se muestra el error
             if (result is Resource.Error) {
                 _error.value = "No se pudo enviar el mensaje: ${result.exception.message}"
             }

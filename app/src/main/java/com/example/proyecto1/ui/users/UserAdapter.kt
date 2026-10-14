@@ -19,6 +19,7 @@ class UserAdapter(
             // El XML usa Data Binding (@{user.name}), así que se le pasa el usuario al binding
             binding.user = user
             binding.executePendingBindings()
+            // Al tocar el usuario se avisa a la pantalla para que abra su chat
             binding.root.setOnClickListener {
                 onUserClick(user)
             }

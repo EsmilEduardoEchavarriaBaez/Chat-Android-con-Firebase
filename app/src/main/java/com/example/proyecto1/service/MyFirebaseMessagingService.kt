@@ -21,6 +21,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             ?: remoteMessage.data["body"]
             ?: ""
 
+        // Muestra el aviso con la misma función que usan los mensajes del chat
         NotificationUtils.showNotification(this, title, body)
     }
 

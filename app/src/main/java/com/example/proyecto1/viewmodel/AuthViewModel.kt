@@ -28,12 +28,14 @@ class AuthViewModel : ViewModel() {
 
     // Valida los datos y pide al repositorio iniciar sesión
     fun login(email: String, password: String) {
+        // Si los datos no son válidos se muestra el error sin llamar a Firebase
         val error = validateEmailAndPassword(email, password)
         if (error != null) {
             _authState.value = Resource.Error(Exception(error))
             return
         }
 
+        // Muestra la carga y pide a Firebase iniciar sesión; el resultado se pasa a un mensaje en español
         _authState.value = Resource.Loading
         repository.login(email.trim(), password) { result ->
             _authState.value = toFriendlyResult(result)
@@ -42,12 +44,14 @@ class AuthViewModel : ViewModel() {
 
     // Valida los datos y pide al repositorio crear la cuenta
     fun register(name: String, email: String, password: String) {
+        // Si los datos no son válidos se muestra el error sin llamar a Firebase
         val error = validateRegister(name, email, password)
         if (error != null) {
             _authState.value = Resource.Error(Exception(error))
             return
         }
 
+        // Muestra la carga y pide a Firebase crear la cuenta; el resultado se pasa a un mensaje en español
         _authState.value = Resource.Loading
         repository.register(name.trim(), email.trim(), password) { result ->
             _authState.value = toFriendlyResult(result)
@@ -56,9 +60,11 @@ class AuthViewModel : ViewModel() {
 
     // Revisa que el correo y la contraseña no estén vacíos y que el correo sea válido
     private fun validateEmailAndPassword(email: String, password: String): String? {
+        // Ningún campo puede estar vacío
         if (Validators.isEmptyField(email) || Validators.isEmptyField(password)) {
             return "Completa todos los campos"
         }
+        // El correo debe tener un formato válido
         if (!Validators.isValidEmail(email.trim())) {
             return "El correo no tiene un formato válido"
         }
@@ -67,13 +73,16 @@ class AuthViewModel : ViewModel() {
 
     // Valida todos los campos del registro
     private fun validateRegister(name: String, email: String, password: String): String? {
+        // El nombre no puede estar vacío
         if (Validators.isEmptyField(name)) {
             return "Completa todos los campos"
         }
+        // Se reutiliza la validación del correo y la contraseña del login
         val error = validateEmailAndPassword(email, password)
         if (error != null) {
             return error
         }
+        // La contraseña debe tener al menos 6 caracteres (Firebase no acepta menos)
         if (!Validators.isValidPassword(password)) {
             return "La contraseña debe tener al menos 6 caracteres"
         }
@@ -82,9 +91,11 @@ class AuthViewModel : ViewModel() {
 
     // Cambia el error de Firebase por un mensaje en español
     private fun toFriendlyResult(result: Resource<FirebaseUser>): Resource<FirebaseUser> {
+        // Si no hubo error, el resultado se devuelve tal cual
         if (result !is Resource.Error) {
             return result
         }
+        // Cada tipo de error de Firebase se cambia por un mensaje claro
         val message = when (result.exception) {
             is FirebaseAuthWeakPasswordException -> "La contraseña es muy débil"
             is FirebaseAuthInvalidCredentialsException -> "Correo o contraseña incorrectos"

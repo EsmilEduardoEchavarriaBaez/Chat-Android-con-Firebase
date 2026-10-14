@@ -19,8 +19,7 @@ object ImageCompressor {
 
     // Reduce y comprime la imagen elegida para que pese mucho menos antes de subirla (devuelve null si falla)
     fun compressImage(context: Context, imageUri: Uri): ByteArray? {
-        // Glide achica la imagen al leerla y la endereza si la foto venía girada.
-        // No se guarda en caché porque solo se usa una vez para subirla
+        // Glide lee la imagen ya achicada y enderezada, sin guardarla en caché porque solo se usa una vez
         val request = Glide.with(context)
             .asBitmap()
             .load(imageUri)
@@ -30,11 +29,13 @@ object ImageCompressor {
             .submit(MAX_IMAGE_SIZE, MAX_IMAGE_SIZE)
 
         return try {
+            // Espera la imagen y la comprime a JPEG en memoria
             val bitmap = request.get()
             val stream = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, stream)
             stream.toByteArray()
         } catch (e: Exception) {
+            // Si algo falla se anota en Logcat y se devuelve null
             Log.e("ImageCompressor", "No se pudo comprimir la imagen: ${e.message}")
             null
         } finally {
